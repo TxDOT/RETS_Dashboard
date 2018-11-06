@@ -370,11 +370,15 @@
 				        </h4>
 				      </div>
 				      <div id="collapse2" class="panel-collapse collapse">
-				        <div class="panel-body">
-						  <ul id="basemapList" class="list-group">
-					        <li id="txdotBasemap" class="list-group-item hover">TxDOT</li>
-					        <li id="imageryBasemap" class="list-group-item hover">Imagery</li>
-					      </ul>						
+				        <div id="basemapOpt" class="panel-body">
+			        	  <form>
+				        	<div class="radio">
+				          	  <label class="basemapRadio hover"><input class="hover" type="radio" name="optradio" checked>TxDOT</label>
+			          		</div>	
+			          		<div class="radio">
+				          	  <label class="basemapRadio hover"><input class="hover" type="radio" name="optradio">Imagery</label>	
+			          		</div>	
+		          		  </form>			
 				        </div>
 				      </div>
 				    </div>
@@ -466,9 +470,13 @@
 						  <ul class="list-group">
 					        <li id="tableToggle" class="list-group-item hover">Close Table</li>
 					        <li id="tableResizer" class="list-group-item">
-					        	<label class="radio-inline hover"><input type="radio" name="optradio">Small</label>
-								<label class="radio-inline hover"><input type="radio" name="optradio" checked>Medium</label>
-								<label class="radio-inline hover"><input type="radio" name="optradio">Large</label>
+					        <form>
+				        	  <div class="radio">
+					        	<label class="radio-inline hover"><input class="hover" type="radio" name="optradio">Small</label>
+								<label class="radio-inline hover"><input class="hover" type="radio" name="optradio" checked>Medium</label>
+								<label class="radio-inline hover"><input class="hover" type="radio" name="optradio">Large</label>
+							  </div>
+						    </form>
 					        </li>
 					      </ul>    
 				        </div>
@@ -653,9 +661,9 @@
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">        
 		      <div class="col-sm-offset-3 col-sm-8">
-		        <button type="button" class="btn btn-success" id="saveBtn">Save</button>
+		        <button type="button" class="btn btn-success save" id="saveBtn">Save</button>
 		        <button type="button" class="btn btn-default" id="deleteBtn" data-toggle="modal" data-target="#confirmMod">Delete</button>		        
-		        <button type="button" class="btn btn-default" id="cancelBtn">Cancel</button>		        		        
+		        <button type="button" class="btn btn-default cancel" id="cancelBtn">Cancel</button>		        		        
 		        <button type="button" class="btn btn-default" id="moveBtn"><span class="glyphicon glyphicon-move"> </span> Move</button>
 		        <!-- <button type="button" class="btn btn-default" id="openAttachmentsBtn" data-toggle="modal" data-target="#attachMod"><span class="glyphicon glyphicon-paperclip"></span></button>   --> 
 		      </div>
@@ -682,6 +690,27 @@
 		      </div>
 		      <div class="modal-footer"> 
 		        <button type="button" class="btn btn-danger" data-dismiss="modal" id="confDelBtn">Delete</button>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+		<!-- Modal to confirm save before adding a new point (when another point is already selected) -->
+		<div id="saveMod" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">You have unsaved edits!</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>Select Continue to proceed without saving, or Cancel to return to attribute form.</p>
+		      </div>
+		      <div class="modal-footer"> 
+		        <button type="button" class="btn btn-primary cancel" data-dismiss="modal" id="modalContBtn">Continue</button>
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 		      </div>
 		    </div>
@@ -752,6 +781,7 @@
         "esri/symbols/TextSymbol",
 		"esri/symbols/Font",
 		"esri/layers/LabelLayer",
+		"esri/layers/GraphicsLayer",
 
         "dojo/parser",
         "dojo/_base/array",
@@ -802,6 +832,7 @@
             TextSymbol,
             Font,
             LabelLayer,
+            GraphicsLayer,
 
             parser,
             array, 
@@ -849,7 +880,7 @@
 	  	var expArray = [];
 	  	var oID;
 	  	var previousID = '';
-	  	var appVersion = "Version 2.0.2"
+	  	var appVersion = "Version 2.0.3"
 	  	var GISAnlstDisplay;
 	    var GRIDAnlstDisplay;
 		var DistAnlstDisplay;
@@ -982,14 +1013,19 @@
 			var drawToolbar = new Draw(map);
 
 		//  Set up the EDIT TOOL used for moving points
-			var editToolbar = new Edit(map);
+			var editToolbar = new Edit(map);		
 		
 		// Set up the search widget
+
+			// Set up graphic layer for the search widget
+			var searchGraphic = new GraphicsLayer();
+			
 	        var search = new Search({            
 	            enableButtonMode: false, //this enables the search widget to display as a single button
 	            enableLabel: false,
 	            enableSuggestions:true,
 	            enableInfoWindow: false,
+	            // graphicsLayer: searchGraphic,
 	            showInfoWindowOnSelect: false,
 	            allPlaceholder:"City, County, District, Route, CSJ...",
 	            map: map,
@@ -1015,10 +1051,10 @@
 
 	         sources.push({
 	            featureLayer: new FeatureLayer("https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Control_Sections/FeatureServer/0"),
-	            searchFields: ["CTRL_SECT_LN_NBR"],
-	            displayField: "CTRL_SECT_LN_NBR",
+	            searchFields: ["CTRL_SECT_NBR"],
+	            displayField: "CTRL_SECT_NBR",
 	            exactMatch: false,
-	            outFields: ["CTRL_SECT_LN_NBR","RTE_RB_NM","BEGIN_MPT","END_MPT"],
+	            outFields: ["CTRL_SECT_NBR","RTE_NM","BEGIN_MPT","END_MPT"],
 	            name: "Control Section",
 	            placeholder: "001001",
 	            highlightSymbol: new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.Color([255,255,0,0.5]), 7),
@@ -1197,8 +1233,8 @@
 					$('#moBtn').prop('disabled', true);
 				}
 				// Do not rerun query if Move mode is enabled from attribute form
-				if ($('#moveBtn').html() == "Save Move") {
-					console.log("Return: In Move mode");
+				if ($('#moveBtn').html() === "Save Move") {
+					console.log("@workflowLyr on-click, Return: In Move mode");
 					return
 				}
 				// If not in Move mode, select the feature that was clicked on, open the attribute form and populate attribute fields from selected feature
@@ -1278,7 +1314,7 @@
 				}
 			});
 
-		// SHrink & expand attribute table
+		// Shrink & expand attribute table
 			$('.radio-inline').click(function(){
 				console.log("table resizer click");
 				var text = $(this).text();
@@ -1308,12 +1344,33 @@
 
 		// Activate draw toolbar (to enable drawing of points) and also get the value of the selected template to input into attribute form
 			template.on("selection-change", function() {
-				$('#clearBtn').css("display", "block");
-				drawToolbar.activate(Draw.POINT);
-	    		templateSelected = template.getSelected();
-    			console.log(templateSelected);		
-				});	
-
+				templateSelected = template.getSelected();
+				console.log("Move in progress? ", editToolbar.getCurrentState().isModified);
+				console.log("Template selection change.  Checking state of attribute form (true=changed; false=unchanged): ", $("#attrForm").data("changed"));				
+				if (templateSelected === null){ // Check if there is a template selected.  If not, return (because the "selection-change" is the result of clearing the selection, not a new add.)
+					return
+				}
+				else{
+					// Check if the template was selected while the attr form is being edited, and if so, popup a modal.
+					if ($("#attrForm").data("changed") === true | editToolbar.getCurrentState().isModified === true) {
+	   					console.log("Form has unsaved edits")
+	   					$("#saveMod").modal('show'); // Pop up modal asking if user wants to save first
+	   					}
+					else {
+						// close attribute form window and clear form or whatever else needs to happen so that data doesn't get plugged into the new point's attribute	
+						console.log("No unsaved edits in attribute form.  Firing up template to add point, and closing clearing and closing attrSideNav if open.")
+						$('#moveBtn').html("Move");
+						$('#clearBtn').css("display", "block");
+						$("#attrSideNav").css("width","0");
+		            	$("#attrForm").trigger("reset");
+						drawToolbar.activate(Draw.POINT);
+						workflowLyr.clearSelection();
+						myFeatureTable.clearFilter();
+		    			console.log("Template selected: ", templateSelected.template.name);	
+	    			}	
+    			}
+			});	
+				
 		// Save edits after drawing point
 			drawToolbar.on("draw-complete", function(evt) {
             	drawToolbar.deactivate();
@@ -1325,11 +1382,11 @@
             	var graphic = new Graphic(geometry, null, attr);
 
  	  			workflowLyr.applyEdits([graphic], null, null, function(){
- 	  				console.log(graphic.attributes.OBJECTID); 
+ 	  				console.log("RETS ID: ", graphic.attributes.OBJECTID); 
  	  				// Immediately select the feature (so it shows up as selected and is filtered in the attribute table) using the Object ID from the graphic
  	  				var selQuery = new Query();
   					selQuery.objectIds = [graphic.attributes.OBJECTID];
-  					console.log(selQuery);
+  					console.log("Selection query:", selQuery);
 	  				workflowLyr.selectFeatures(selQuery, FeatureLayer.SELECTION_NEW, function(sel){
 	  					selectedFeatures = sel;
 	  				});
@@ -1338,18 +1395,19 @@
 	            // Set up the basic query for the roadway layer in order to get the route name
 		            var roadwaysQuery = new Query();
 				    roadwaysQuery.units = "feet";
-				    roadwaysQuery.distance = 500;
+				    roadwaysQuery.distance = 50;
 				    roadwaysQuery.geometry = geometry;
 
 			    // Get Route Name from TxDOT Roadways
 				  	roadwayLyr.queryFeatures(roadwaysQuery, function (results){
+				  		console.log(results);
 				  		if (results.features[0] === undefined){
 				  			console.log("No roadway snapped to");
 				  			return;
 				  		}
 				  		else {
-				      		routeName = results.features[0].attributes.RTE_RB_NM;
-				      		console.log(routeName);
+				      		routeName = results.features[0].attributes.RTE_NM;
+				      		console.log("Snapped route:", routeName);
 			      		}
 			  		});
 
@@ -1357,7 +1415,7 @@
 				    queryLyr.queryFeatures(roadwaysQuery, populateFields);
 
 					function populateFields(results){
-						console.log(results.features);
+						console.log("Fields passed to populateFields function: ", results.features);
 						if (results.features === undefined || results.features.length == 0){
 							$('#retsIdAttr').val(graphic.attributes.OBJECTID);
 			     	  		$('#statAttr').val(attr.STAT);
@@ -1404,12 +1462,13 @@
 
 	     	  		function openForm(){
 		     	  		// Disable the Minute Order link button Minute Order field is blank
-						if (attr.MO_NBR === null){
-							$('#moBtn').prop('disabled', true);
-						}	
-
-		     	  		// Show Atrributes Side Nav
+		     	  		console.log(templateSelected);
+						if (attr.MO_NBR === null | attr.MO_NBR === ""){
+							$('#moBtn').prop('disabled', true);							
+						}
+		     	  		// Show Atrributes Side Nav and disable cancelBtn
 		     	  		$("#attrSideNav").css("width","500px");
+		     	  		$('#cancelBtn').prop('disabled', true);
 	     	  		}
   					
 				}); 
@@ -1422,15 +1481,11 @@
 			});
 
  
-		// Map on-click event to help with filtering and refreshing table during/after edits
-    		map.on("click", function(clickEvent){
-    			console.log(clickEvent);
-    			// checkTemplateSelection(clickEvent);
-    			console.log("Map click");
-    			// var selectedFeatures2 = workflowLyr.getSelectedFeatures();
-    			// console.log("Array of selected features: ", selectedFeatures);
-    			console.log("oID on map click: ", oID);
-    			var objectIdArray = [oID];
+		// Map on-click event to filter selected feature in attribute table.  oID and previous oID checks simply prevents refreshing of the table if you click on the same point again
+    		map.on("click", function(clickEvent){ 
+    			console.log("@map on-click event results: ", clickEvent);
+    			console.log("oID on map click (if no new point feature is selected, this is the same as the last click): ", oID);
+    			var objectIdArray = [oID];    
     			if (previousID !==oID){
 						console.log("New Selection: Running function to filter attribute table by selected features");
 	            		myFeatureTable.filterRecordsByIds([objectIdArray]);
@@ -1457,7 +1512,8 @@
 			});
 			}  	
 
-	    // Populate checkboxs from query of workflow layer distinct values
+	    // Populate filter dropdowns from query of workflow layer distinct values
+	    	// Get distinct list of GRID Analysts
 			var queryTask2 = new QueryTask(serviceURL);  
 			var query2 = new Query();  
 			query2.where = "GRID_ANLST is not null";  // query for non-null values  
@@ -1486,7 +1542,7 @@
 			});
 				};
   
-        	// query distinct use code values from parcels  
+        	// Get distinct list of GIS Analysts 
 			var queryTask = new QueryTask(serviceURL);
 			var query = new Query();  
 			query.where = "GIS_ANLST is not null";  // query for non-null values  
@@ -1497,7 +1553,6 @@
 			queryTask.execute(query).then(GISanalist);
 
 			function GISanalist (results){
-				console.log(results);
 			for (var i=0;i<results.features.length;i++){
 				var analist = results.features[i].attributes.GIS_ANLST;
 				GISAnalystArray.push(analist);
@@ -1516,6 +1571,12 @@
 		      	filterAnalyst(text);
 			}); 
 			};
+
+		// Check if form has been changed (if so, and if the user selects the template picker to add a new point, the user will be prompted to save first)
+			$("#attrForm :input").change(function() {
+   				$("#attrForm").data("changed",true);
+   				console.log("form has changed");
+			});
 
         // Begin TEMP Assignment Filter...........................................................................................
 
@@ -1591,7 +1652,7 @@
 			});
 
 		// On click event to switch basemaps
-			$("#basemapList li").click(function(){				
+			$(".basemapRadio").click(function(){				
 				var text = $(this).text();
 				console.log(text);
 				if (text  === "Imagery"){
@@ -1614,7 +1675,9 @@
 	       });
 
 		// Save edits
-			$('#saveBtn').click(function (){
+			$('.save').click(function (){				
+				console.log("Save Button clicked");
+				$('#attrForm').data("changed", "false"); 
 				saveEdits();
 			});
 
@@ -1624,39 +1687,8 @@
 			});	
 
 		// Cancel edits
-			$('#cancelBtn').click(function (){
-				console.log(templateSelected);
-				if (templateSelected === undefined | templateSelected === null) {
-					console.log("Cancelled");
-					$('#moveBtn').html("Move");
-					workflowLyr.clearSelection();
-	            	workflowLyr.refresh();
-	            	myFeatureTable.clearFilter(); 
-	    			myFeatureTable.refresh();
-	    			editToolbar.deactivate();
-					$("#attrSideNav").css("width","0");
-	            	$("#attrForm").trigger("reset");   
-	            	previousID = '';       		
-            	}
-            	else {
-					console.log(selectedFeatures);
-					console.log("Cancelling add point");
-            		workflowLyr.applyEdits(null, null, selectedFeatures, function(){
-            			console.log("Deleting added points after cancel");
-            			$('#moveBtn').html("Move");
-						workflowLyr.clearSelection();
-		            	workflowLyr.refresh();
-		            	myFeatureTable.clearFilter(); 
-		    			myFeatureTable.refresh();
-		    			drawToolbar.deactivate();
-		    			editToolbar.deactivate();
-		    			template.clearSelection();
-		    			$('#clearBtn').css("display", "none");
-						$("#attrSideNav").css("width","0");
-		            	$("#attrForm").trigger("reset");
-	            	});
-	            	previousID = '';
-            	}
+			$('.cancel').click(function (evt){
+				cancelEdits(evt);				
 			});	
 
 
@@ -1695,8 +1727,9 @@
     	// Save Edits when Save button is clicked
     	 	function saveEdits(){
 	            console.log("Saving edits"); 
+	            $('#attrForm').data("changed", "false");   
             // Populate the graphic's attributes with any new values from the form
-    	 		console.log(selectedFeatures);
+    	 		console.log("Selected feature (used for saving edits): ", selectedFeatures);
     	 		selectedFeatures[0].attributes.RTE_NM = $('#rteNameAttr').val();
     	 		selectedFeatures[0].attributes.AFFECT_RTE = $('#affctRtesAttr').val();
     	 		selectedFeatures[0].attributes.MRT_NBR = $('#mrtNbrAttr').val();
@@ -1718,27 +1751,33 @@
     	 		selectedFeatures[0].attributes.UPDT_CMNT = $('#updateCmntAttr').val();
     	 		selectedFeatures[0].attributes.MSG = $('#msgAttr').val();
 	 		// Apply edits 
-	 			workflowLyr.applyEdits(null, selectedFeatures, null, function(){
+	 			workflowLyr.applyEdits(null, selectedFeatures, null, function(){ 
+        			editToolbar.deactivate();				
+        			drawToolbar.deactivate();
 	 				workflowLyr.clearSelection();
 	            	workflowLyr.refresh();
 	            	myFeatureTable.clearFilter(); 
         			myFeatureTable.refresh();
         			template.clearSelection();
-        			drawToolbar.deactivate();
-        			editToolbar.deactivate();
 	           		queryStatus();	            
 					$("#attrSideNav").css("width","0");
 	            	$("#attrForm").trigger("reset");				
 					$('#moveBtn').html("Move");
 					$('#moBtn').prop('disabled', false);
+					$('#cancelBtn').prop('disabled', false);
 					$('#clearBtn').css("display", "none");
 					previousID = ''; 
-					console.log(templateSelected);
-	        	});	
+	 				console.log("Save successful, ", editToolbar.getCurrentState());	
+	        	}, function(error){
+	        		console.log("Save failed: ", error);
+	        	}
+	        	);	
 
  			}
 
+		// Delete edits
 	        function deleteEdits(){
+	        	$('#attrForm').data("changed", "false");
 	        	workflowLyr.applyEdits(null, null, selectedFeatures, function(){       			
         			template.clearSelection();
 	        		editToolbar.deactivate();
@@ -1747,13 +1786,60 @@
 	            	workflowLyr.refresh();
 	            	myFeatureTable.clearFilter(); 
         			myFeatureTable.refresh();
-	           		queryStatus();	            
+	           		queryStatus();	          
 					$("#attrSideNav").css("width","0");
 	            	$("#attrForm").trigger("reset");
 					$('#moveBtn').html("Move");
 					$('#clearBtn').css("display", "none");
+					$('#cancelBtn').prop('disabled', false);
 					previousID = ''; 
 	 			});        	  	
+	        }
+
+        // Cancel edits
+	        function cancelEdits(evt){
+		        $('#attrForm').data("changed", "false");   // reset status of attribute form to 'unchanged'
+				console.log("@ cancelEdits, Selected Template: ", templateSelected);
+				// Check from where this cancel initiated, and adjust following steps accordingly				
+				if (evt.target.id === "cancelBtn"){ // if this originated from the Cancel button on the attr form, then check if the record is a new add or an existing point.
+					// If the edit is for an existing point (i.e. there is no template selected, thus not a new point), then clear everything and close the form
+					if (templateSelected === undefined | templateSelected === null) {
+						console.log("Cancelled");
+		    			template.clearSelection();	// don't think this is necessary, but precautionary    			
+		    			drawToolbar.deactivate();	// don't think this is necessary, but precautionary  
+		    			cancelClear(); 		    			     		
+	            	}
+	            	// If the edit was for a new point, then DELETE the new point and clear the forms, etc. and close the form
+	            	else {
+						console.log("@ cancelEdits, Selected Features: ", selectedFeatures);
+						console.log("Cancelling add point");
+	            		workflowLyr.applyEdits(null, null, selectedFeatures, function(){
+	            			console.log("Deleting added points after cancel");	
+			    			template.clearSelection();            			
+			    			drawToolbar.deactivate();
+			    			cancelClear();
+		            	});
+	            	}
+            	}
+            	if (evt.target.id === "modalContBtn"){
+            		drawToolbar.activate(Draw.POINT);
+		    		templateSelected = template.getSelected();
+		    		cancelClear();
+            	}
+            	function cancelClear(){
+            		$('#moveBtn').html("Move");
+					workflowLyr.clearSelection();
+	            	workflowLyr.refresh();
+	            	myFeatureTable.clearFilter(); 
+	    			myFeatureTable.refresh();	    			
+	    			editToolbar.deactivate();
+            		$('#clearBtn').css("display", "none");
+					$("#attrSideNav").css("width","0");
+	            	$("#attrForm").trigger("reset");   
+	            	previousID = '';  
+            	}
+
+
 	        }
 
     	
