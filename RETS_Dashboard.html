@@ -16,6 +16,47 @@
 	    margin: 0;
 	  }
 
+	/* Loader/Spinner and Mask */
+	#loader {
+	  display: block;	
+	  position: absolute;
+	  left: 50%;
+	  top: 50%;
+	  z-index: 100;
+	  width: 150px;
+	  height: 150px;
+	  margin: -75px 0 0 -75px;
+	  border: 16px solid #f3f3f3;
+	  border-radius: 50%;
+	  border-top: 16px solid #3498db;
+	  width: 120px;
+	  height: 120px;
+	  -webkit-animation: spin 1s linear infinite;
+	  animation: spin 1s linear infinite;
+	}
+
+	/* Safari */
+	@-webkit-keyframes spin {
+	  0% { -webkit-transform: rotate(0deg); }
+	  100% { -webkit-transform: rotate(360deg); }
+	}
+
+	@keyframes spin {
+	  0% { transform: rotate(0deg); }
+	  100% { transform: rotate(360deg); }
+	}
+
+	#mask{
+	 	height: 100%;
+	 	width: 100%;
+	 	top: 0;
+  		left: 0;
+	 	background-color: rgba(0,0,0,.5);
+	 	position: fixed;
+	 	display: block;
+	 	z-index: 99;
+	 }
+
 	/* SIDE NAVS******************************************************************* */
 	.sidenav {
 	    height: 100%; /* 100% Full-height */
@@ -94,6 +135,17 @@
 
 	#tableToggle:hover {
 		cursor: pointer;
+	}
+
+	.filterBtn {
+		width: 100%;
+		text-align: left;
+	}
+
+	
+	.dropdown > .btn > .caret {
+	  float: right;
+	  margin: 6px 0;
 	}
 
 	/*Log Off Button*/
@@ -334,6 +386,9 @@
   <body class="tundra">
 	<div class="container-fluid" style="overflow: hidden;">
 
+		<div id="loader"></div>
+		<div id="mask"></div>
+
 		<div id="mapDiv">			
 			<div id="homeButton"></div>
 			<!-- <div id="analystDisplay"></div> -->
@@ -359,7 +414,7 @@
 				        <div class="panel-body">
 				          <row> 	
 							<div id="divTemplatePicker"></div> 
-							<button id="clearBtn" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-remove"></span> Clear Selection</button>
+							<button id="clearBtn" type="button" class="btn btn-sm clearTemplate"><span class="glyphicon glyphicon-remove"></span> Clear Selection</button>
   		  				  </row>
   		  				</div>
 				      </div>
@@ -423,24 +478,32 @@
 				      <div id="collapse4" class="panel-collapse collapse">
 				        <div class="panel-body">
 						      <div class="dropdown">
-							    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id="analystBtn" >Select an GIS Analyst
+							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="analystBtn" >Select an GIS Analyst
 							    <span class="caret"></span></button>
 							    <ul id="GISAnalystSel" class="dropdown-menu">
-							      <li value="All Analysts"><a href="#GISAnalystSel">All Analysts</a></li>				      
+							      <li value="Clear"><a href="#GISAnalystSel"><b>Clear</b></a></li>				      
 							    </ul>
 							  </div>
 						      <div class="dropdown">
-							    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id="GRIDAnalystBtn">Select a GRID Analyst
+							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="GRIDAnalystBtn">Select a GRID Analyst
 							    <span class="caret"></span></button>
 							    <ul id="GRIDAnalystSel" class="dropdown-menu">
-							      <li value="All Analysts"><a href="#GRIDAnalystSel">All Analysts</a></li>
+							      <li value="Clear"><a href="#GRIDAnalystSel"><b>Clear</b></a></li>
 							    </ul>
 							  </div>  
+							  <div class="dropdown">
+							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="routeBtn">Select a Route
+							    <span class="caret"></span></button>							    
+							    <ul id="routeSel" class="dropdown-menu">
+							      <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">	
+							      <li value="Clear"><a href="#routeSel"><b>Clear</b></a></li>
+							    </ul>
+							  </div> 
 						      <div class="dropdown">
-							    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id="statusBtn" >Select a Status
+							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="statusBtn" >Select a Status
 							    <span class="caret"></span></button>
 							    <ul id="statusSel" class="dropdown-menu"">
-							      <li value="All Jobs"><a href="#statusSel">All Jobs</a></li>
+							      <li value="Clear"><a href="#statusSel"><b>Clear</b></a></li>
 							      <li value="Not Started"><a href="#statusSel">Not Started</a></li>
 							      <li value="In Progress"><a href="#statusSel">In Progress</a></li>
 							      <li value="Complete"><a href="#statusSel">Complete</a></li>
@@ -449,14 +512,15 @@
 							    </ul>
 							  </div>
 						      <div class="dropdown">
-							    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" id="priorityBtn" >Select a Priority
+							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="priorityBtn" >Select a Priority
 							    <span class="caret"></span></button>
 							    <ul id="prioritySel" class="dropdown-menu">
-							      <li value="All Priorities"><a href="#prioritySel">All Priorities</a></li>
+							      <li value="Clear"><a href="#prioritySel"><b>Clear</b></a></li>
 							      <li value="Yes"><a href="#prioritySel">Yes</a></li>
 							      <li value="No"><a href="#prioritySel">No</a></li>
 							    </ul>
 							  </div> 
+							  <button id="clearFilterBtn" type="button" class="btn btn-sm "><span class="glyphicon glyphicon-remove"></span> Clear Filters</button>
 				        </div>
 				      </div>
 				    </div>				    
@@ -664,7 +728,7 @@
 		      <div class="col-sm-offset-3 col-sm-8">
 		        <button type="button" class="btn btn-success save" id="saveBtn">Save</button>
 		        <button type="button" class="btn btn-default" id="deleteBtn" data-toggle="modal" data-target="#confirmMod">Delete</button>		        
-		        <button type="button" class="btn btn-default cancel" id="cancelBtn">Cancel</button>		        		        
+		        <button type="button" class="btn btn-default cancelEdits" id="cancelBtn">Cancel</button>		        		        
 		        <button type="button" class="btn btn-default" id="moveBtn"><span class="glyphicon glyphicon-move"> </span> Move</button>
 		        <!-- <button type="button" class="btn btn-default" id="openAttachmentsBtn" data-toggle="modal" data-target="#attachMod"><span class="glyphicon glyphicon-paperclip"></span></button>   --> 
 		      </div>
@@ -711,8 +775,8 @@
 		        <p>Select Continue to proceed without saving, or Cancel to return to attribute form.</p>
 		      </div>
 		      <div class="modal-footer"> 
-		        <button type="button" class="btn btn-primary cancel" data-dismiss="modal" id="modalContBtn">Continue</button>
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		        <button type="button" class="btn btn-primary cancelEdits" data-dismiss="modal" id="modalContBtn">Continue</button>
+		        <button type="button" class="btn btn-default clearTemplate" data-dismiss="modal"id="modalCancBtn">Cancel</button>
 		      </div>
 		    </div>
 		  </div>
@@ -878,10 +942,11 @@
 		var assignment = ''; //TEMP
 		var analyst = '';
 		var GRIDAnalyst = '';
+		var route = '';
 	  	var expArray = [];
 	  	var oID;
 	  	var previousID = '';
-	  	var appVersion = "Version 2.0.3"
+	  	var appVersion = "Version 2.0.4"
 	  	var GISAnlstDisplay;
 	    var GRIDAnlstDisplay;
 		var DistAnlstDisplay;
@@ -891,6 +956,7 @@
 		var selectedFeatures;
 		var GISAnalystArray = [];
 		var GRIDAnalystArray = [];
+		var formFlag = 0;
 
 	// MAP AND LAYERS*********************************************************************************************
 
@@ -1186,9 +1252,29 @@
 			map: map
 			}, "homeButton");
 			home.startup(); 	
+
+		// Filter Route List on keyup
+			// function filterFunction(){
+			// 	$.each($("#routeSel li") function(){
+			// 		if (this.innerHTML.toUpperCase().indexOf(filter) > -1) {
+			//             a[i].style.display = "";
+			//         } else {
+			//             a[i].style.display = "none";
+			//         }
+			// 	}
+			// }
           	
 
 	// EVENTS.............................................................................
+
+
+			window.onload = function(){
+				console.log("Window onload event");
+				$('#mask').css("display", "none");
+				$('#loader').css("display", "none");
+				$('#tableDiv').css("display", "none");
+				$('#tableToggle').html("Open Table");
+			}
 		
 		// Show tooltip
 			$('[data-toggle="tooltip"]').tooltip();  
@@ -1228,6 +1314,11 @@
 				oID = evt.graphic.attributes.OBJECTID;					
 				console.log(oID);			
 				console.log("workflowLyr clicked");
+				var objectIdArray = [oID]; 
+				if (previousID !== oID){
+        		myFeatureTable.filterRecordsByIds([objectIdArray]);
+        		previousID = oID;
+        		}
 
 				// Disable the Minute Order link button Minute Order field is blank
 				if (evt.graphic.attributes.MO_NBR === null | evt.graphic.attributes.MO_NBR === "" ){
@@ -1269,7 +1360,7 @@
      	  		$('#updateCmntAttr').val(evt.graphic.attributes.UPDT_CMNT);
      	  		$('#msgAttr').val(evt.graphic.attributes.MSG);
  	  		// Show the attribute sidenav
-				$("#attrSideNav").css("width","500px");
+				openForm();
 				}
 			});
 
@@ -1292,12 +1383,29 @@
 			});
 
 		// Clear Template Picker 
-			$("#clearBtn").click(function(){
+			$('.clearTemplate').click(function(){
 				console.log("Template cleared");
 				template.clearSelection();
 				drawToolbar.deactivate();
-				$(this).css("display", "none");
+				$('#clearBtn').css("display", "none");
+				$('#mask').css("display", "none");
+				$('#loader').css("display", "none");
 			});
+
+		// Clear Filters
+			$('#clearFilterBtn').click(function(){
+				// $('.filterBtn').each(function() {$(this).text()});
+				$("#analystBtn").text("Select a GIS Analyst").append(" <span class='caret'></span>");
+				filterAnalyst("Clear");
+				$("#GRIDAnalystBtn").text("Select a GRID Analyst").append(" <span class='caret'></span>");
+				filterGRIDAnalyst("Clear");
+				$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");
+				filterRoute("Clear");
+				$("#statusBtn").text("Select a Status").append(" <span class='caret'></span>");	
+				filterStatus("Clear");
+				$("#priorityBtn").text("Select a Priority").append(" <span class='caret'></span>");	
+				filterPriority("Clear");
+			});	
 
 		// Open & Close attribute table
 			$('#tableToggle').click(function(){
@@ -1346,31 +1454,37 @@
 		// Activate draw toolbar (to enable drawing of points) and also get the value of the selected template to input into attribute form
 			template.on("selection-change", function() {
 				templateSelected = template.getSelected();
-				console.log("Move in progress? ", editToolbar.getCurrentState().isModified);
-				console.log("Template selection change.  Checking state of attribute form (true=changed; false=unchanged): ", $("#attrForm").data("changed"));				
 				if (templateSelected === null){ // Check if there is a template selected.  If not, return (because the "selection-change" is the result of clearing the selection, not a new add.)
 					return
 				}
-				else{
-					// Check if the template was selected while the attr form is being edited, and if so, popup a modal.
-					if ($("#attrForm").data("changed") === true | editToolbar.getCurrentState().isModified === true) {
-	   					console.log("Form has unsaved edits")
-	   					$("#saveMod").modal('show'); // Pop up modal asking if user wants to save first
-	   					}
-					else {
-						// close attribute form window and clear form or whatever else needs to happen so that data doesn't get plugged into the new point's attribute	
-						console.log("No unsaved edits in attribute form.  Firing up template to add point, and closing clearing and closing attrSideNav if open.")
-						$('#moveBtn').html("Move");
-						$('#clearBtn').css("display", "block");
-						$("#attrSideNav").css("width","0");
-		            	$("#attrForm").trigger("reset");
-						drawToolbar.activate(Draw.POINT);
-						workflowLyr.clearSelection();
-						myFeatureTable.clearFilter();
-		    			console.log("Template selected: ", templateSelected.template.name);	
-	    			}	
+				else{									
+    				console.log("Template selected: ", templateSelected.template.name);				
+					$('#clearBtn').css("display", "block");
+					drawToolbar.activate(Draw.POINT);	
+					if (formFlag === 0){ // checking if form is open
+						return
+					}
+					else {					
+						closeForm();
+					}		
     			}
 			});	
+
+		// On map click, close the attriute form if open, otherwise do nothing.
+			map.on("click", function (evt){
+				console.log("Map on-click event: ", evt);	
+				console.log("formFlag: ", formFlag);			
+				// Check if user clicked off of a feature/point.  If not, then skip (do nothing), since the workflowLyr on event will handle this.  If so, check if the form is open.  If not, then skip (do nothing).  If so, then close the form.
+				if (evt.graphic === undefined){ //did not click on a feature
+					if (formFlag === 0){ // and, form is not open
+						return
+					}
+					else { // if form is open, close it					
+						closeForm();
+						template.clearSelection();
+					}
+				}
+			});		
 				
 		// Save edits after drawing point
 			drawToolbar.on("draw-complete", function(evt) {
@@ -1401,7 +1515,6 @@
 
 			    // Get Route Name from TxDOT Roadways
 				  	roadwayLyr.queryFeatures(roadwaysQuery, function (results){
-				  		console.log(results);
 				  		if (results.features[0] === undefined){
 				  			console.log("No roadway snapped to");
 				  			return;
@@ -1415,15 +1528,16 @@
 			    // Get District, County, and Analyst names from the lookup polygon layer
 				    queryLyr.queryFeatures(roadwaysQuery, populateFields);
 
-					function populateFields(results){
+					function populateFields(results){						
+     	  				$('#cancelBtn').prop('disabled', true); //disable the cancelBtn for adds (because deleteBtn will accomplish the same thing)
 						console.log("Fields passed to populateFields function: ", results.features);
-						if (results.features === undefined || results.features.length == 0){
+						if (results.features === undefined || results.features.length == 0){ // if the point is outside of the state and there are no results from the queryLyr
 							$('#retsIdAttr').val(graphic.attributes.OBJECTID);
 			     	  		$('#statAttr').val(attr.STAT);
 			     	  		$('#rteNameAttr').val(routeName);
 							openForm();    	  			
 						}
-						else {
+						else { //if the queryLyr returns results
 							console.log("Running Populate Fields function and applying edits to workflowLyr");
 							distName = results.features[0].attributes.DIST_NM;
 							console.log (distName);
@@ -1459,19 +1573,7 @@
 
 			     	  		openForm();
 		     	  		}
-	     	  		}
-
-	     	  		function openForm(){
-		     	  		// Disable the Minute Order link button Minute Order field is blank
-		     	  		console.log(templateSelected);
-						if (attr.MO_NBR === null | attr.MO_NBR === ""){
-							$('#moBtn').prop('disabled', true);							
-						}
-		     	  		// Show Atrributes Side Nav and disable cancelBtn
-		     	  		$("#attrSideNav").css("width","500px");
-		     	  		$('#cancelBtn').prop('disabled', true);
-	     	  		}
-  					
+	     	  		}	     	  		
 				}); 
 
           	}); 
@@ -1481,21 +1583,21 @@
 				attachmentEditor.showAttachments(evt.graphic,workflowLyr);
 			});
 
- 
+ 		// DEPRECATED..............put this function into workflowLyr on-click instead
 		// Map on-click event to filter selected feature in attribute table.  oID and previous oID checks simply prevents refreshing of the table if you click on the same point again
-    		map.on("click", function(clickEvent){ 
-    			console.log("@map on-click event results: ", clickEvent);
-    			console.log("oID on map click (if no new point feature is selected, this is the same as the last click): ", oID);
-    			var objectIdArray = [oID];    
-    			if (previousID !==oID){
-						console.log("New Selection: Running function to filter attribute table by selected features");
-	            		myFeatureTable.filterRecordsByIds([objectIdArray]);
-	            		previousID = oID;
-					}
-					else {
-						console.log("Not a new selection: Not running function to filter attribute table by selected features");					
-					}	
-    		});
+    	// 	map.on("click", function(clickEvent){ 
+    	// 		console.log("@map on-click event results: ", clickEvent);
+    	// 		console.log("@map on-click, oID (if no new point feature is selected, this is the same as the last click): ", oID);
+    	// 		var objectIdArray = [oID]; 
+    	// 		if (previousID !==oID || oID !== undefined){
+					// 	console.log("New Selection: Running function to filter attribute table by selected features");
+	    //         		myFeatureTable.filterRecordsByIds([objectIdArray]);
+	    //         		previousID = oID;
+					// }
+					// else {
+					// 	console.log("Not a new selection: Not running function to filter attribute table by selected features");					
+					// }	
+    	// 	});
 
 
 		// Set cursor to pointer when hovering over a feature in the map
@@ -1514,34 +1616,6 @@
 			}  	
 
 	    // Populate filter dropdowns from query of workflow layer distinct values
-	    	// Get distinct list of GRID Analysts
-			var queryTask2 = new QueryTask(serviceURL);  
-			var query2 = new Query();  
-			query2.where = "GRID_ANLST is not null";  // query for non-null values  
-			query2.orderByFields = ["GRID_ANLST"];    // sort it so we won't have to later  
-			query2.returnGeometry = false;          // turn geometry off, required to be false when using 
-			query2.returnDistinctValues = true;  
-			query2.outFields = ["GRID_ANLST"];  
-			queryTask2.execute(query2).then(GRIDanalist);
-
-			function GRIDanalist (results){
-			for (var i=0;i<results.features.length;i++){
-				var gridanalist = results.features[i].attributes.GRID_ANLST;
-				GRIDAnalystArray.push(gridanalist);
-				}
-
-        	$.each(GRIDAnalystArray,function(){
-            	var listItem = document.createElement('li');
-            	$('#GRIDAnalystSel').append($(listItem).attr('value',this).html("<a href='#GRIDAnalystSel'>"+ this +"</a>"));
-        	}); 
-
-		 	$("#GRIDAnalystSel li").click(function(){	
-	 		  $("#GRIDAnalystBtn").text($(this).text());	
-		      var text = $(this).text();
-		      console.log(text);
-		      filterGRIDAnalyst(text);
-			});
-				};
   
         	// Get distinct list of GIS Analysts 
 			var queryTask = new QueryTask(serviceURL);
@@ -1551,26 +1625,90 @@
 			query.returnGeometry = false;          // turn geometry off, required to be false when using 
 			query.returnDistinctValues = true;  
 			query.outFields = ["GIS_ANLST"];  
-			queryTask.execute(query).then(GISanalist);
+			queryTask.execute(query).then(popGISAnlstList);
 
-			function GISanalist (results){
-			for (var i=0;i<results.features.length;i++){
-				var analist = results.features[i].attributes.GIS_ANLST;
-				GISAnalystArray.push(analist);
-			}
+			function popGISAnlstList (results){
 
-				$.each(GISAnalystArray,function(){
-            	var listItem = document.createElement('li');
-            	$('#GISAnalystSel').append($(listItem).attr('value',this).html("<a href='#GRIDAnalystSel'>"+ this +"</a>"));
-        	});
-				
+				$.each(results.features,function(){
+	            	var listItem = document.createElement('li');
+	            	var name = this.attributes.GIS_ANLST;
+	            	$('#GISAnalystSel').append($(listItem).attr('value',name).html("<a href='#GISAnalystSel'>"+ name + "</a>"));
+	        	});
+					
 				$("#GISAnalystSel li").click(function(){
-			 	console.log(GISAnalystArray);
-	 			$("#analystBtn").text($(this).text());
-		      	var text = $(this).text();
-		      	console.log(text);
-		      	filterAnalyst(text);
-			}); 
+					if ($(this).text() === "Clear"){
+			 			$("#analystBtn").text("Select a GIS Analyst").append(" <span class='caret'></span>");	
+			 		}
+			 		else {
+			 			$("#analystBtn").text($(this).text()).append(" <span class='caret'></span>");	
+			 		}			 			
+			      	var text = $(this).text();
+			      	console.log(text);
+			      	filterAnalyst(text);
+				}); 
+			};
+
+
+	    	// Get distinct list of GRID Analysts
+			var queryTask2 = new QueryTask(serviceURL);  
+			var query2 = new Query();  
+			query2.where = "GRID_ANLST is not null";  // query for non-null values  
+			query2.orderByFields = ["GRID_ANLST"];    // sort it so we won't have to later  
+			query2.returnGeometry = false;          // turn geometry off, required to be false when using 
+			query2.returnDistinctValues = true;  
+			query2.outFields = ["GRID_ANLST"];  
+			queryTask2.execute(query2).then(popGRIDAnlstList);
+
+			function popGRIDAnlstList (results){
+
+				$.each(results.features,function(){
+	            	var listItem = document.createElement('li');
+	            	var name = this.attributes.GRID_ANLST;
+	            	$('#GRIDAnalystSel').append($(listItem).attr('value',name).html("<a href='#GRIDAnalystSel'>"+ name +"</a>"));
+	        	});
+
+			 	$("#GRIDAnalystSel li").click(function(){	
+			 		if ($(this).text() === "Clear"){
+			 			$("#GRIDAnalystBtn").text("Select a GRID Analyst").append(" <span class='caret'></span>");	
+			 		}
+			 		else {
+			 			$("#GRIDAnalystBtn").text($(this).text()).append(" <span class='caret'></span>");	
+			 		}		 		  
+					var text = $(this).text();
+					console.log(text);
+					filterGRIDAnalyst(text);
+				});
+			};
+
+			// Get distinct list of GRID Analysts
+			var queryTask3 = new QueryTask(serviceURL);  
+			var query3 = new Query();  
+			query3.where = "RTE_NM is not null";  // query for non-null values  
+			query3.orderByFields = ["RTE_NM"];    // sort it so we won't have to later  
+			query3.returnGeometry = false;          // turn geometry off, required to be false when using 
+			query3.returnDistinctValues = true;  
+			query3.outFields = ["RTE_NM"];  
+			queryTask3.execute(query3).then(popRouteList);
+
+			function popRouteList (results){
+
+				$.each(results.features,function(){
+	            	var listItem = document.createElement('li');
+	            	var name = this.attributes.RTE_NM;
+	            	$('#routeSel').append($(listItem).attr('value',name).html("<a href='#routeSel'>"+ name +"</a>"));
+	        	});
+
+			 	$("#routeSel li").click(function(){	
+			 		if ($(this).text() === "Clear"){
+			 			$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");	
+			 		}
+			 		else {
+			 			$("#routeBtn").text($(this).text()).append(" <span class='caret'></span>");	
+			 		}		 		  
+					var text = $(this).text();
+					console.log(text);
+					filterRoute(text);
+				});
 			};
 
 		// Check if form has been changed (if so, and if the user selects the template picker to add a new point, the user will be prompted to save first)
@@ -1615,25 +1753,30 @@
 
 		// End TEMP Assignment Filter...........................................................................................
 
-        // Get the value of the Analyst dropdown menu for workflowLyr definition query
-		 	$("#GISAnalystSel li").click(function(){
-	 		  $("#analystBtn").text($(this).text());
-		      var text = $(this).text();
-		      console.log(text);
-		      filterAnalyst(text);
-			});  
+        // Get the value of the Analyst dropdown menu for workflowLyr definition query  THIS EVENT NOW HAPPENS UNDER A FUNCTION ABOVE (LEAVING HERE FOR NOW)
+		 // 	$("#GISAnalystSel li").click(function(){
+	 	// 	  $("#analystBtn").text($(this).text());
+		 //      var text = $(this).text();
+		 //      console.log(text);
+		 //      filterAnalyst(text);
+			// });  
 
-		// Get the value of the GRID Analyst dropdown menu for workflowLyr definition query
-		 	$("#GRIDAnalystSel li").click(function(){		 	  
-	 		  $("#GRIDAnalystBtn").text($(this).text());	
-		      var text = $(this).text();
-		      console.log(text);
-		      filterGRIDAnalyst(text);
-			});  
+		// Get the value of the GRID Analyst dropdown menu for workflowLyr definition query THIS EVENT NOW HAPPENS UNDER A FUNCTION ABOVE (LEAVING HERE FOR NOW)
+		 // 	$("#GRIDAnalystSel li").click(function(){		 	  
+	 	// 	  $("#GRIDAnalystBtn").text($(this).text());	
+		 //      var text = $(this).text();
+		 //      console.log(text);
+		 //      filterGRIDAnalyst(text);
+			// });  
 
         // Get the value of the Status dropdown menu for workflowLyr definition query
 		 	$("#statusSel li").click(function(){
-	 		  $("#statusBtn").text($(this).text());
+		 	  if ($(this).text() === "Clear"){
+				$("#statusBtn").text("Select a Status").append(" <span class='caret'></span>");	
+				}
+			  else {
+				$("#statusBtn").text($(this).text()).append(" <span class='caret'></span>");		
+			  }			 		  
 		      var text = $(this).text();
 		      console.log(text);
 		      filterStatus(text);
@@ -1641,7 +1784,13 @@
 
 		// Get the value of the Priority dropdown menu for workflowLyr definition query
 		 	$("#prioritySel li").click(function(){
-	 		  $("#priorityBtn").text($(this).text());		 		
+		 	  if ($(this).text() === "Clear"){
+				$("#priorityBtn").text("Select a Priority").append(" <span class='caret'></span>");	
+				}
+			  else {
+				$("#priorityBtn").text($(this).text()).append(" <span class='caret'></span>");		
+			  }			
+	 		  			 		
 		      var text = $(this).text();
 		      console.log(text);
 		      filterPriority(text);
@@ -1679,16 +1828,22 @@
 			$('.save').click(function (){				
 				console.log("Save Button clicked");
 				$('#attrForm').data("changed", "false"); 
+				$('#mask').css("display", "block");
+				$('#loader').css("display", "block");
 				saveEdits();
 			});
 
 		// Delete edits
-			$('#confDelBtn').click(function (){
+			$('#confDelBtn').click(function (){				 
+				$('#mask').css("display", "block");
+				$('#loader').css("display", "block");
 				deleteEdits();
 			});	
 
 		// Cancel edits
-			$('.cancel').click(function (evt){
+			$('.cancelEdits').click(function (evt){ 
+				$('#mask').css("display", "block");
+				$('#loader').css("display", "block");
 				cancelEdits(evt);				
 			});	
 
@@ -1723,12 +1878,11 @@
 			//       dojo.query("#analystDisplay").style("display", "block");
 			//   	  }	
 			//     });
-			// }
+			// }  					
 
     	// Save Edits when Save button is clicked
     	 	function saveEdits(){
 	            console.log("Saving edits"); 
-	            $('#attrForm').data("changed", "false");   
             // Populate the graphic's attributes with any new values from the form
     	 		console.log("Selected feature (used for saving edits): ", selectedFeatures);
     	 		selectedFeatures[0].attributes.RTE_NM = $('#rteNameAttr').val();
@@ -1755,19 +1909,10 @@
 	 			workflowLyr.applyEdits(null, selectedFeatures, null, function(){ 
         			editToolbar.deactivate();				
         			drawToolbar.deactivate();
-	 				workflowLyr.clearSelection();
-	            	workflowLyr.refresh();
-	            	myFeatureTable.clearFilter(); 
-        			myFeatureTable.refresh();
         			template.clearSelection();
-	           		queryStatus();	            
-					$("#attrSideNav").css("width","0");
-	            	$("#attrForm").trigger("reset");				
-					$('#moveBtn').html("Move");
-					$('#moBtn').prop('disabled', false);
-					$('#cancelBtn').prop('disabled', false);
-					$('#clearBtn').css("display", "none");
-					previousID = ''; 
+	           		queryStatus();	
+	           		closeForm(); 
+					// previousID = ''; 
 	 				console.log("Save successful, ", editToolbar.getCurrentState());	
 	        	}, function(error){
 	        		console.log("Save failed: ", error);
@@ -1778,22 +1923,12 @@
 
 		// Delete edits
 	        function deleteEdits(){
-	        	$('#attrForm').data("changed", "false");
-	        	workflowLyr.applyEdits(null, null, selectedFeatures, function(){       			
-        			template.clearSelection();
+	        	workflowLyr.applyEdits(null, null, selectedFeatures, function(){ 
 	        		editToolbar.deactivate();
         			drawToolbar.deactivate(); 
-	 				workflowLyr.clearSelection();
-	            	workflowLyr.refresh();
-	            	myFeatureTable.clearFilter(); 
-        			myFeatureTable.refresh();
-	           		queryStatus();	          
-					$("#attrSideNav").css("width","0");
-	            	$("#attrForm").trigger("reset");
-					$('#moveBtn').html("Move");
-					$('#clearBtn').css("display", "none");
-					$('#cancelBtn').prop('disabled', false);
-					previousID = ''; 
+        			template.clearSelection();
+	           		queryStatus();
+	           		closeForm();
 	 			});        	  	
 	        }
 
@@ -1805,44 +1940,103 @@
 				if (evt.target.id === "cancelBtn"){ // if this originated from the Cancel button on the attr form, then check if the record is a new add or an existing point.
 					// If the edit is for an existing point (i.e. there is no template selected, thus not a new point), then clear everything and close the form
 					if (templateSelected === undefined | templateSelected === null) {
-						console.log("Cancelled");
+						console.log("Cancelled from cancelBtn");
 		    			template.clearSelection();	// don't think this is necessary, but precautionary    			
-		    			drawToolbar.deactivate();	// don't think this is necessary, but precautionary  
-		    			cancelClear(); 		    			     		
+		    			drawToolbar.deactivate();	// don't think this is necessary, but precautionary  		    			
+		    			closeForm(); 		    			     		
 	            	}
 	            	// If the edit was for a new point, then DELETE the new point and clear the forms, etc. and close the form
 	            	else {
-						console.log("@ cancelEdits, Selected Features: ", selectedFeatures);
-						console.log("Cancelling add point");
+						console.log("Cancelling add point from cancelBtn");
 	            		workflowLyr.applyEdits(null, null, selectedFeatures, function(){
 	            			console.log("Deleting added points after cancel");	
 			    			template.clearSelection();            			
-			    			drawToolbar.deactivate();
-			    			cancelClear();
+			    			drawToolbar.deactivate();   			
+	    					editToolbar.deactivate(); 
+	    					queryStatus();
+			    			closeForm();
 		            	});
 	            	}
             	}
-            	if (evt.target.id === "modalContBtn"){
-            		drawToolbar.activate(Draw.POINT);
-		    		templateSelected = template.getSelected();
-		    		cancelClear();
+            	if (evt.target.id === "modalContBtn"){ // if this originated from the popup modal's "Continue" button (because there had been edits underway in the attribute form when the user clicked the template to add a new point), then cancel previous edits, enable the draw toolbar with the selected template, and close the attribute form
+            		if (templateSelected === undefined | templateSelected === null) {
+						console.log("Cancelled from modalContBtn");
+		    			template.clearSelection();	// don't think this is necessary, but precautionary    			
+		    			drawToolbar.deactivate();	// don't think this is necessary, but precautionary  		    			
+		    			editToolbar.deactivate();
+		    			closeForm(); 		    			     		
+	            	}
+	            	else {	            		
+						console.log("Cancelled from modalContBtn.  Continuing with adding new point");
+	            		drawToolbar.activate(Draw.POINT);
+			    		templateSelected = template.getSelected();   			
+		    			editToolbar.deactivate(); 
+			    		closeForm();
+		    		}
             	}
-            	function cancelClear(){
-            		$('#moveBtn').html("Move");
-					workflowLyr.clearSelection();
-	            	workflowLyr.refresh();
-	            	myFeatureTable.clearFilter(); 
-	    			myFeatureTable.refresh();	    			
-	    			editToolbar.deactivate();
-            		$('#clearBtn').css("display", "none");
-					$("#attrSideNav").css("width","0");
-	            	$("#attrForm").trigger("reset");   
-	            	previousID = '';  
-            	}
-
-
 	        }
 
+       // Open attribute form (attrSideNav)
+			function openForm(){
+ 	  			formFlag = 1;
+     	  		// Disable the Minute Order link button Minute Order field is blank
+     	  		console.log("@openForm, selected template = ", templateSelected);
+     	  		// Show Atrributes Side Nav
+     	  		$("#attrSideNav").css("width","500px");
+     	  		$('#clearBtn').css("display", "none"); // hide the "Clear Selection" button on the template picker
+     	  		if (selectedFeatures[0].attributes.MO_NBR === null){
+     	  			$('#moBtn').prop('disabled', true); // disable the Minute Order link button
+     	  		}
+ 	  		} 
+
+        // Close attribute form
+        	function closeForm(){    
+        		if ($("#attrForm").data("changed") === true | editToolbar.getCurrentState().isModified === true) {
+					console.log("Form has unsaved edits")
+					$("#saveMod").modal('show'); // Pop up modal asking if user wants to save first
+					}
+				else {    		
+	        		formFlag = 0;
+	        		console.log("Closing form and resetting formFlag to zero: ", formFlag);
+	        		$('#moveBtn').html("Move"); // reset the text on the Move button to read "Move"
+	        		// $('#clearBtn').css("display", "none"); // hide the "Clear Selection" button on the template picker
+					$("#attrSideNav").css("width","0"); // close the attribute side nav
+	            	$("#attrForm").trigger("reset");  // reset form fields
+	        		$('#attrForm').data("changed", "false");  // reset changed property to false
+					$('#cancelBtn').prop('disabled', false);  // re-enable the cancel button
+					$('#moBtn').prop('disabled', true); // disable the Minute Order link button
+					$('#mask').css("display", "none");
+					$('#loader').css("display", "none");
+					workflowLyr.clearSelection(); 
+					workflowLyr.refresh();
+	            	myFeatureTable.clearFilter(); 
+	            	previousID = '';  
+            	}
+        	}
+
+        // MOVE THIS TO FUNCTION SECTION
+		// Check if the form is open and if it has been edited, then close or prompt to save
+			// function clearForm(){
+			// 	console.log("Runnning clearForm function");
+			// 	// Check if the template was selected while the attr form is being edited, and if so, popup a modal.			
+			// 	console.log("Checking if move is in progress? ", editToolbar.getCurrentState().isModified);
+			// 	console.log("Checking if attribute form has unsaved edits: ", $("#attrForm").data("changed"));	
+			// 	console.log(selectedFeatures);			
+			// 	if ($("#attrForm").data("changed") === true | editToolbar.getCurrentState().isModified === true) {
+			// 			console.log("Form has unsaved edits")
+			// 			$("#saveMod").modal('show'); // Pop up modal asking if user wants to save first
+			// 			}
+			// 	else {
+			// 		// close attribute form window and clear form or whatever else needs to happen so that data doesn't get plugged into the new point's attribute	
+			// 		console.log("No unsaved edits in attribute form.  Firing up template to add point, and clearing and closing attrSideNav.")
+			// 		$('#moveBtn').html("Move");
+			// 		$('#clearBtn').css("display", "block");
+			// 		$("#attrSideNav").css("width","0");
+	  //           	$("#attrForm").trigger("reset");
+			// 		workflowLyr.clearSelection();
+			// 		myFeatureTable.clearFilter();
+			// 	}
+			// }	
     	
 
     	// Build attribute table
@@ -1923,7 +2117,7 @@
 
 			function filterAnalyst (value){
 				console.log(value);			
-				if (value == "All Analysts") {
+				if (value == "Clear") {
 		       		analyst ="";	
 				}
 				else {
@@ -1935,7 +2129,7 @@
 
 			function filterGRIDAnalyst (value){
 				console.log(value);			
-				if (value == "All Analysts") {
+				if (value == "Clear") {
 		       		GRIDAnalyst ="";	
 				}
 				else {
@@ -1945,9 +2139,21 @@
 				buildDefExp();
 			}
 
+			function filterRoute (value){
+				console.log(value);			
+				if (value == "Clear") {
+		       		route ="";	
+				}
+				else {
+					route = "RTE_NM = '" + value + "'";
+				}
+				console.log(route);
+				buildDefExp();
+			}
+
 			function filterStatus (value){
 				console.log(value);			
-				if (value == "All Jobs") {
+				if (value == "Clear") {
 		       		stat ="";	
 				}	
 				else {
@@ -1959,7 +2165,7 @@
 
 			function filterPriority (value){
 				console.log(value);			
-				if (value == "All Priorities") {
+				if (value == "Clear") {
 		       		prior ="";	
 				}	
 				else {
@@ -1973,6 +2179,7 @@
 				console.log("Running Build Definition Expression function");				
 				console.log(GRIDAnalyst);
 				console.log(analyst);
+				console.log(route);
 				console.log(prior);
 				console.log(stat);
 				console.log(assignment); //TEMP
@@ -1987,6 +2194,9 @@
 				}
 				if (GRIDAnalyst !== ""){
 					expArray.push(GRIDAnalyst);
+				}
+				if (route !== ""){
+					expArray.push(route);
 				}
 				if (prior !== ""){
 					expArray.push(prior);
