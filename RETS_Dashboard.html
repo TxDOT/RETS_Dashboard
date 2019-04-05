@@ -222,6 +222,12 @@
 		text-decoration: none;
 	}
 
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button { 
+	  -webkit-appearance: none; 
+	  margin: 0; 
+	}
+
      /* Remove Esri's title from the attachment div since the modal already has a title*/
    /*  #attachDiv b {
      	display: none;
@@ -520,6 +526,15 @@
 							      <li value="No"><a href="#prioritySel">No</a></li>
 							    </ul>
 							  </div> 
+							  <div class="dropdown">
+							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="yearBtn" >Select a Year
+							    <span class="caret"></span></button>
+							    <ul id="yearSel" class="dropdown-menu">
+							      <li value="Clear"><a href="#yearSel"><b>Clear</b></a></li>
+							      <li value="Yes"><a href="#yearSel">2017</a></li>
+							      <li value="No"><a href="#yearSel">2018</a></li>
+							    </ul>
+							  </div> 
 							  <button id="clearFilterBtn" type="button" class="btn btn-sm "><span class="glyphicon glyphicon-remove"></span> Clear Filters</button>
 				        </div>
 				      </div>
@@ -563,7 +578,7 @@
 		      <div class="col-sm-8">
 		        <input type="text" class="form-control" id="retsIdAttr" placeholder="RETS ID (auto-generated)" name="retsIdAttr" value="" disabled>
 		      </div>
-		    </div>
+		    </div>		    
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="rteNameAttr">Route Name:</label>
 		      <div class="col-sm-8">          
@@ -585,7 +600,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="minOrderAttr">Minute Order:</label>
 		      <div class="col-sm-6">          
-		        <input type="text" class="form-control" id="minOrderAttr" placeholder="Enter Minute Order" name="minOrderAttr" value="">
+		        <input type="number" class="form-control" id="minOrderAttr" placeholder="Enter Minute Order" name="minOrderAttr" value="">
 		      </div>
 		      <div class="col-sm-2">          
 		        <button id="moBtn" type="button" class="btn btn-default pull-right" data-toggle="tooltip" data-placement="top" title="Look Up Minute Order"><span class="glyphicon glyphicon-link"></span></button>
@@ -609,7 +624,18 @@
 		        <select class="form-control" id="priorAttr" placeholder="Select Priority" >
 				    <option value="Yes">Yes</option>
 				    <option value="No" selected>No</option>
-				  </select>
+			  	</select>
+		      </div>
+		    </div>
+		    <div style="padding-left: 5px;"class="form-group">
+		      <label class="control-label col-sm-3" for="yearAttr">Data Year:</label>
+		      <div class="col-sm-8"> 
+		        <select class="form-control" id="yearAttr" placeholder="Enter Year" >
+				    <option value=""></option>
+				    <option value="2019">2019</option>
+				    <option value="2018">2018</option>
+				    <option value="2017">2017</option>
+			  	</select>
 		      </div>
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">
@@ -941,6 +967,7 @@
 	  	var finalExp;
 	  	var stat = '';
 		var prior = '';
+		var year = '';
 		var assignment = ''; //TEMP
 		var analyst = '';
 		var GRIDAnalyst = '';
@@ -948,7 +975,7 @@
 	  	var expArray = [];
 	  	var oID;
 	  	var previousID = '';
-	  	var appVersion = "Version 2.0.5"
+	  	var appVersion = "Version 2.0.6"
 	  	var GISAnlstDisplay;
 	    var GRIDAnlstDisplay;
 		var DistAnlstDisplay;
@@ -1018,6 +1045,11 @@
 				    new Color([102,255,255, 1])
 			    );
 			    workflowLyr.setSelectionSymbol(selectionSymbol);
+
+	    // TEST QC layer
+	    	// var qcLyrURL = "https://txdot4awhpms01.dot.state.tx.us/arcgis/rest/services//Test/serverTest/MapServer";
+	    	// var qcLyr = new FeatureLayer(qcLyrURL, {id:"QC",visible: true, outFields:["*"]});
+	    	// map.addLayer(qcLyr);
 
 		// District layer used to grab analysts' names for district assignments
 			var queryLyr = new FeatureLayer("https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_RETS_DistCnty_lookup/FeatureServer/0",{id: "Districts", outFields : ["DIST_NM", "GIS_ANLST", "GRID_ANLST", "DIST_ANLST", "CNTY_NM"]});				
@@ -1321,11 +1353,7 @@
         		myFeatureTable.filterRecordsByIds([objectIdArray]);
         		previousID = oID;
         		}
-
-				// Disable the Minute Order link button Minute Order field is blank
-				if (evt.graphic.attributes.MO_NBR === null | evt.graphic.attributes.MO_NBR === "" ){
-					$('#moBtn').prop('disabled', true);
-				}
+				
 				// Do not rerun query if Move mode is enabled from attribute form
 				if ($('#moveBtn').html() === "Save Move") {
 					console.log("@workflowLyr on-click, Return: In Move mode");
@@ -1341,6 +1369,7 @@
   				});	
 			// Populate fields in atribute form
 				$('#retsIdAttr').val(evt.graphic.attributes.OBJECTID);
+				$('#yearAttr').val(evt.graphic.attributes.YR_END);
      	  		$('#rteNameAttr').val(evt.graphic.attributes.RTE_NM);
 				$('#affctRtesAttr').val(evt.graphic.attributes.AFFECT_RTE);
 				$('#mrtNbrAttr').val(evt.graphic.attributes.MRT_NBR);				
@@ -1407,6 +1436,8 @@
 				filterStatus("Clear");
 				$("#priorityBtn").text("Select a Priority").append(" <span class='caret'></span>");	
 				filterPriority("Clear");
+				$("#yearBtn").text("Select a Year").append(" <span class='caret'></span>");	
+				filterYear("Clear");
 			});	
 
 		// Open & Close attribute table
@@ -1475,7 +1506,7 @@
 		// On map click, close the attriute form if open, otherwise do nothing.
 			map.on("click", function (evt){
 				console.log("Map on-click event: ", evt);	
-				console.log("formFlag: ", formFlag);			
+				console.log("formFlag: ", formFlag);	
 				// Check if user clicked off of a feature/point.  If not, then skip (do nothing), since the workflowLyr on event will handle this.  If so, check if the form is open.  If not, then skip (do nothing).  If so, then close the form.
 				if (evt.graphic === undefined){ //did not click on a feature
 					if (formFlag === 0){ // and, form is not open
@@ -1798,6 +1829,20 @@
 		      filterPriority(text);
 			});  
 
+		// Get the value of the Year dropdown menu for workflowLyr definition query
+		 	$("#yearSel li").click(function(){
+		 	  if ($(this).text() === "Clear"){
+				$("#yearBtn").text("Select a Year").append(" <span class='caret'></span>");	
+				}
+			  else {
+				$("#yearBtn").text($(this).text()).append(" <span class='caret'></span>");		
+			  }			
+	 		  			 		
+		      var text = $(this).text();
+		      console.log(text);
+		      filterYear (text);
+			}); 
+
 		// Use the selected value of the dropdown to fire query to use for Status Table
 			$("#analystBtn" ).change(function() {
  		 		alert( "Handler for .change() called." );
@@ -1887,7 +1932,8 @@
 	            console.log("Saving edits"); 
             // Populate the graphic's attributes with any new values from the form
     	 		console.log("Selected feature (used for saving edits): ", selectedFeatures);
-    	 		selectedFeatures[0].attributes.RTE_NM = $('#rteNameAttr').val();
+    	 		selectedFeatures[0].attributes.RTE_NM = $('#rteNameAttr').val();    	 		
+    	 		selectedFeatures[0].attributes.YR_END = $('#yearAttr').val();
     	 		selectedFeatures[0].attributes.AFFECT_RTE = $('#affctRtesAttr').val();
     	 		selectedFeatures[0].attributes.MRT_NBR = $('#mrtNbrAttr').val();
     	 		selectedFeatures[0].attributes.MO_NBR = $('#minOrderAttr').val();
@@ -1980,15 +2026,18 @@
 
        // Open attribute form (attrSideNav)
 			function openForm(){
- 	  			formFlag = 1;
-     	  		// Disable the Minute Order link button Minute Order field is blank
+ 	  			formFlag = 1;     	  		
      	  		console.log("@openForm, selected template = ", templateSelected);
      	  		// Show Atrributes Side Nav
      	  		$("#attrSideNav").css("width","500px");
      	  		$('#clearBtn').css("display", "none"); // hide the "Clear Selection" button on the template picker
-     	  		if (selectedFeatures[0].attributes.MO_NBR === null){
+     	  		// Disable the Minute Order link button if Minute Order field is blank     	  		
+     	  		if (selectedFeatures[0].attributes.MO_NBR === null | selectedFeatures[0].attributes.MO_NBR === ""){     	  			
      	  			$('#moBtn').prop('disabled', true); // disable the Minute Order link button
-     	  		}
+     	  			}
+ 	  			else {
+ 	  				$('#moBtn').prop('disabled', false); // enable the Minute Order link button
+ 	  			}
  	  		} 
 
         // Close attribute form
@@ -2006,7 +2055,6 @@
 	            	$("#attrForm").trigger("reset");  // reset form fields
 	        		$('#attrForm').data("changed", "false");  // reset changed property to false
 					$('#cancelBtn').prop('disabled', false);  // re-enable the cancel button
-					$('#moBtn').prop('disabled', true); // disable the Minute Order link button
 					$('#mask').css("display", "none");
 					$('#loader').css("display", "none");
 					workflowLyr.clearSelection(); 
@@ -2177,13 +2225,26 @@
 				buildDefExp();
 			}
 
+			function filterYear (value){
+				console.log(value);			
+				if (value == "Clear") {
+		       		year ="";	
+				}	
+				else {
+					year = "YR_END = '" + value + "'";
+				}
+				console.log(year);
+				buildDefExp();
+			}
+
 			function buildDefExp(exp){
 				console.log("Running Build Definition Expression function");				
 				console.log(GRIDAnalyst);
 				console.log(analyst);
 				console.log(route);
 				console.log(prior);
-				console.log(stat);
+				console.log(stat);			
+				console.log(year);
 				console.log(assignment); //TEMP
 				expArray =[];
 				// TEMP Assignment filter
@@ -2205,6 +2266,9 @@
 				}
 				if (stat !== ""){
 					expArray.push(stat);
+				}
+				if (year !== ""){
+					expArray.push(year);
 				}
 				// console.log(exp);
 				console.log(expArray);	
