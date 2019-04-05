@@ -941,14 +941,14 @@
 
 	// Start up Identify Manager to handle permissions for layers with TxDOT-only access
 
-          var info = new OAuthInfo({
-                    appId: "mzUb97L38u61Wa4a",
-                    portalUrl: "https://txdot.maps.arcgis.com",
-                    popup: false,
-                    expiration: 720
-                });
-            IdentityManager.registerOAuthInfos([info]);
-            IdentityManager.getCredential(info.portalUrl + "/sharing");				
+          // var info = new OAuthInfo({
+          //           appId: "mzUb97L38u61Wa4a",
+          //           portalUrl: "https://txdot.maps.arcgis.com",
+          //           popup: false,
+          //           expiration: 720
+          //       });
+          //   IdentityManager.registerOAuthInfos([info]);
+          //   IdentityManager.getCredential(info.portalUrl + "/sharing");				
 
 	// VARIABLES**********************************************************************************************
 
@@ -976,7 +976,7 @@
 	  	var expArray = [];
 	  	var oID;
 	  	var previousID = '';
-	  	var appVersion = "Version 2.0.6"
+	  	var appVersion = "Version 2.0.7"
 	  	var GISAnlstDisplay;
 	    var GRIDAnlstDisplay;
 		var DistAnlstDisplay;
@@ -1031,9 +1031,9 @@
      	
 		// RETS layer
 
-			serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking/FeatureServer/0";
+			// serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking/FeatureServer/0";
 				// DEV VERSION...........................................................
-				// serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking_DEV/FeatureServer/0";
+				serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking_DEV/FeatureServer/0";
 			var workflowLyr = new FeatureLayer(serviceURL, {id:"Workflow",visible: true, outFields:["*"]});
 
 			workflowLyr.hasAttachments = true;	
@@ -1426,19 +1426,20 @@
 
 		// Clear Filters
 			$('#clearFilterBtn').click(function(){
-				// $('.filterBtn').each(function() {$(this).text()});
+				console.log("Clear Filters");
 				$("#analystBtn").text("Select a GIS Analyst").append(" <span class='caret'></span>");
-				filterAnalyst("Clear");
+				analyst = "";
 				$("#GRIDAnalystBtn").text("Select a GRID Analyst").append(" <span class='caret'></span>");
-				filterGRIDAnalyst("Clear");
+				GRIDAnalyst ="";	
 				$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");
-				filterRoute("Clear");
+				route ="";
 				$("#statusBtn").text("Select a Status").append(" <span class='caret'></span>");	
-				filterStatus("Clear");
+				stat ="";
 				$("#priorityBtn").text("Select a Priority").append(" <span class='caret'></span>");	
-				filterPriority("Clear");
+				prior ="";
 				$("#yearBtn").text("Select a Year").append(" <span class='caret'></span>");	
-				filterYear("Clear");
+				year ="";
+				buildDefExp();
 			});	
 
 		// Open & Close attribute table
