@@ -941,14 +941,14 @@
 
 	// Start up Identify Manager to handle permissions for layers with TxDOT-only access
 
-          // var info = new OAuthInfo({
-          //           appId: "mzUb97L38u61Wa4a",
-          //           portalUrl: "https://txdot.maps.arcgis.com",
-          //           popup: false,
-          //           expiration: 720
-          //       });
-          //   IdentityManager.registerOAuthInfos([info]);
-          //   IdentityManager.getCredential(info.portalUrl + "/sharing");				
+          var info = new OAuthInfo({
+                    appId: "mzUb97L38u61Wa4a",
+                    portalUrl: "https://txdot.maps.arcgis.com",
+                    popup: false,
+                    expiration: 720
+                });
+            IdentityManager.registerOAuthInfos([info]);
+            IdentityManager.getCredential(info.portalUrl + "/sharing");				
 
 	// VARIABLES**********************************************************************************************
 
@@ -1031,9 +1031,9 @@
      	
 		// RETS layer
 
-			// serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking/FeatureServer/0";
+			serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking/FeatureServer/0";
 				// DEV VERSION...........................................................
-				serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking_DEV/FeatureServer/0";
+				// serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking_DEV/FeatureServer/0";
 			var workflowLyr = new FeatureLayer(serviceURL, {id:"Workflow",visible: true, outFields:["*"]});
 
 			workflowLyr.hasAttachments = true;	
