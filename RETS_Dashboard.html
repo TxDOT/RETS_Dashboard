@@ -381,6 +381,18 @@
    	     margin-right: 5px;
      }
 
+     /* MODALS..........................................................*/
+
+     .modal-header {
+	    text-align: center;
+	    font-size: 30px;
+	  }
+	  /* Change the sizing of the Dashboard modal*/
+	  .modal-dialog {
+	  	width: 80%;
+	  	height: auto;
+	  }
+
 	</style>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -769,6 +781,31 @@
 		
 		<div id="tableDiv"></div>
 
+		<!-- MODALS -->
+
+		<!-- Dashboard Modal -->
+		<div id="dashMod" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">Dashboard!</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>User: <span id="userSpan"></span></p>
+
+							 
+		      </div>
+		      <div class="modal-footer"> 
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <span id="userName"></span>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
 		<!-- Modal to confirm deletes -->
 		<div id="confirmMod" class="modal fade" role="dialog">
 		  <div class="modal-dialog">
@@ -948,10 +985,13 @@
                     expiration: 720
                 });
             IdentityManager.registerOAuthInfos([info]);
-            IdentityManager.getCredential(info.portalUrl + "/sharing");				
+            id = IdentityManager.getCredential(info.portalUrl + "/sharing");
+            userName= id.results["0"].userId;				
 
 	// VARIABLES**********************************************************************************************
 
+	  	var id;
+	  	var userName;
 	  	var distName;
 	  	var cntyName;
 	  	var GISAnalystName;
@@ -1024,7 +1064,7 @@
 		        };		
 
 				// Add Google Imagery WMTS layer
-		        var google = new WMTSLayer("https://txgi.tnris.org/login/path/pegasus-horizon-castro-comrade/wmts", GoogleLayerOptions);
+		        var google = new WMTSLayer("https://txgi.tnris.org/login/path/bucket-armada-virtual-lobby/wmts", GoogleLayerOptions);
 		        google.id = "googleLayer";
 
         // LAYERS*********************************************
@@ -1309,6 +1349,7 @@
 				$('#loader').css("display", "none");
 				$('#tableDiv').css("display", "none");
 				$('#tableToggle').html("Open Table");
+				// $("#dashMod").modal()
 			}
 		
 		// Show tooltip
@@ -1330,6 +1371,9 @@
 		// Load  FeatureTable and update Status Table once map loads
 	        map.on("load", function(){	        	
 	        	console.log(appVersion);
+	        	console.log(id);
+	        	console.log("Username:", userName);
+	        	document.getElementById("userSpan").innerHTML = userName;
 	        	loadTable();
 	        	queryStatus();
 	        	// queryAnalystsBasedOnMapCenter(); //TEMP
