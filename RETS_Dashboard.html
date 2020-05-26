@@ -228,6 +228,10 @@
 	  margin: 0; 
 	}
 
+	.charWarning {
+		color: red;
+	}
+
      /* Remove Esri's title from the attachment div since the modal already has a title*/
    /*  #attachDiv b {
      	display: none;
@@ -684,7 +688,8 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="descAttr">Description:</label>
 		      <div class="col-sm-8">          
-		        <textarea class="form-control" rows="5" id="descAttr" placeholder="Enter a detailed description" name="descAttr" value=""></textarea>
+		        <textarea class="form-control" rows="5" maxlength="255" id="descAttr" placeholder="Enter a detailed description" name="descAttr" value=""></textarea>
+		        <div class="charWarning" id="descRemain"> </div>
 		      </div>
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">
@@ -756,13 +761,15 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="updateCmntAttr">Update Comments:</label>
 		      <div class="col-sm-8">          
-		        <textarea class="form-control" rows="5" id="updateCmntAttr" placeholder="Enter comments related to your latest update" name="updateCmntAttr" value=""></textarea>
+		        <textarea class="form-control" rows="5" maxlength="2000" id="updateCmntAttr" placeholder="Enter comments related to your latest update" name="updateCmntAttr" value=""></textarea>
+		        <div class="charWarning" id="updateRemain"> </div>
 		      </div>
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="msgAttr">Message:</label>
 		      <div class="col-sm-8">          
-		        <textarea class="form-control" rows="5" id="msgAttr" placeholder="Enter a message for the next analyst" name="msgAttr" value=""></textarea>
+		        <textarea class="form-control" rows="5" maxlength="255" id="msgAttr" placeholder="Enter a message for the next analyst" name="msgAttr" value=""></textarea>
+		        <div class="charWarning" id="msgRemain"> </div>
 		      </div>
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">        
@@ -1351,6 +1358,17 @@
 				$('#tableToggle').html("Open Table");
 				// $("#dashMod").modal()
 			}
+
+		// Character counters			
+	        $('#descAttr').keyup(function() {	            ;
+	            $('#descRemain').text(255 - $(this).val().length + " characters remaining");
+	         });   
+	        $('#updateCmntAttr').keyup(function() {	            ;
+	            $('#updateRemain').text(2000 - $(this).val().length + " characters remaining");
+	         });  
+	        $('#msgAttr').keyup(function() {	            ;
+	            $('#msgRemain').text(255 - $(this).val().length + " characters remaining");
+	         }); 
 		
 		// Show tooltip
 			$('[data-toggle="tooltip"]').tooltip();  
@@ -2102,7 +2120,10 @@
 	        		$('#attrForm').data("changed", "false");  // reset changed property to false
 					$('#cancelBtn').prop('disabled', false);  // re-enable the cancel button
 					$('#mask').css("display", "none");
-					$('#loader').css("display", "none");
+					$('#loader').css("display", "none");					
+					$("#descRemain").html("");
+					$("#updateRemain").html("");
+					$("#msgRemain").html("");
 					workflowLyr.clearSelection(); 
 					workflowLyr.refresh();
 	            	myFeatureTable.clearFilter(); 
