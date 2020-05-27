@@ -148,6 +148,11 @@
 	  margin: 6px 0;
 	}
 
+	.dropdown-menu {
+		width: 100%;
+		top: auto;
+	}
+
 	/*Log Off Button*/
 	#logoffButton {
 		position: absolute;
@@ -315,25 +320,7 @@
 	display: block;
 	}
 
-	/* TEMP for displaying analyst names at center of map*/
-	/*#analystDisplay {
-		position: absolute;
-		text-align: left;
-		padding: 0px 10px;
-		color: #337ab7;
-		background-color: rgba(255, 255, 255, 1);
-		border-radius: 5px;
-		width: auto;
-		border: 5px;
-		line-height: 20px;
-		height: auto;
-		left: 20px;
-		bottom: 15px;
-		z-index: 30;
-		display: none;
-	}	*/	
-
-	 /* TABLE***********************************************************/
+	/* TABLE***********************************************************/
 	 #tableDiv{
 	  	background-color: #ffffff;	 
 	  	height: auto;
@@ -385,7 +372,7 @@
    	     margin-right: 5px;
      }
 
-     /* MODALS..........................................................*/
+    /* MODALS..........................................................*/
 
      .modal-header {
 	    text-align: center;
@@ -393,7 +380,7 @@
 	  }
 	  /* Change the sizing of the Dashboard modal*/
 	  .modal-dialog {
-	  	width: 80%;
+	  	width: 50%;
 	  	height: auto;
 	  }
 
@@ -416,6 +403,7 @@
 			<!-- <div id="analystDisplay"></div> -->
 		</div>
 
+		<!-- TABLE OF CONTENTS (LEFT SIDE NAV) -->
 		<div id="tocSideNav" class="sidenav">
 			<div class=col-sm-1>
 				<span id="closeBtn" class="glyphicon glyphicon-chevron-left"></span>
@@ -546,10 +534,7 @@
 							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="yearBtn" >Select a Year
 							    <span class="caret"></span></button>
 							    <ul id="yearSel" class="dropdown-menu">
-							      <li value="Clear"><a href="#yearSel"><b>Clear</b></a></li>							      
-							      <li value="2019"><a href="#yearSel">2019</a></li>
-							      <li value="2018"><a href="#yearSel">2018</a></li>
-							      <li value="2017"><a href="#yearSel">2017</a></li>
+							      <li value="Clear"><a href="#yearSel"><b>Clear</b></a></li>
 							    </ul>
 							  </div> 
 							  <button id="clearFilterBtn" type="button" class="btn btn-sm "><span class="glyphicon glyphicon-remove"></span> Clear Filters</button>
@@ -648,7 +633,9 @@
 		      <label class="control-label col-sm-3" for="yearAttr">Data Year:</label>
 		      <div class="col-sm-8"> 
 		        <select class="form-control" id="yearAttr" placeholder="Enter Year" >
-				    <option value=""></option>
+		        	<option value=""></option>
+				    <option value="2021">2021</option>
+				    <option value="2020">2020</option>
 				    <option value="2019">2019</option>
 				    <option value="2018">2018</option>
 				    <option value="2017">2017</option>
@@ -917,6 +904,7 @@
         "esri/IdentityManager",
 
         "esri/symbols/TextSymbol",
+        "esri/layers/LabelClass",
 		"esri/symbols/Font",
 		"esri/layers/LabelLayer",
 		"esri/layers/GraphicsLayer",
@@ -968,6 +956,7 @@
             IdentityManager,
 
             TextSymbol,
+            LabelClass,
             Font,
             LabelLayer,
             GraphicsLayer,
@@ -1023,7 +1012,7 @@
 	  	var expArray = [];
 	  	var oID;
 	  	var previousID = '';
-	  	var appVersion = "Version 2.0.7"
+	  	var appVersion = "Version 2.0.8"
 	  	var GISAnlstDisplay;
 	    var GRIDAnlstDisplay;
 		var DistAnlstDisplay;
@@ -1048,7 +1037,8 @@
 				center: [-99.341389, 31.132222],
 				zoom: 6,
 				logo: false,
-				isDoubleClickZoom: false
+				isDoubleClickZoom: false,
+				showLabels: true
 			});
 
 			map.addLayer(TxDOTVectorTileLayer);
@@ -1082,9 +1072,30 @@
 				// DEV VERSION...........................................................
 				// serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking_DEV/FeatureServer/0";
 			var workflowLyr = new FeatureLayer(serviceURL, {id:"Workflow",visible: true, outFields:["*"]});
-
 			workflowLyr.hasAttachments = true;	
 			map.addLayer(workflowLyr);	
+
+			//Labeling				
+
+				//create a text symbol and renderer to define the style of labels
+				   	var label_symbol =  new TextSymbol();
+					label_symbol.setColor(new Color("#303030"));
+					label_symbol.setFont(new Font("12pt", Font.STYLE_NORMAL, Font.VARIANT_NORMAL, Font.WEIGHT_BOLD,"arial"));
+					label_symbol.setHaloSize(2);
+					label_symbol.setHaloColor(new Color("#F8F8F8"));
+
+					var json = {
+					  "labelExpressionInfo": {"expression": "$feature.OBJECTID"},
+					  "useCodedValues": true,
+					  "labelPlacement":"above-right",
+					  "maxScale": 1,
+					  "minScale": 1000000
+					  };
+
+				//create instance of LabelClass
+				  var labelClass = new LabelClass(json);
+				  labelClass.symbol = label_symbol; // symbol also can be set in LabelClass' json
+				  workflowLyr.setLabelingInfo([ labelClass ]);
 
 			// set a selection symbol for the featurelayer
 		      	var selectionSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 15,
@@ -1093,11 +1104,6 @@
 				    new Color([102,255,255, 1])
 			    );
 			    workflowLyr.setSelectionSymbol(selectionSymbol);
-
-	    // TEST QC layer
-	    	// var qcLyrURL = "https://txdot4awhpms01.dot.state.tx.us/arcgis/rest/services//Test/serverTest/MapServer";
-	    	// var qcLyr = new FeatureLayer(qcLyrURL, {id:"QC",visible: true, outFields:["*"]});
-	    	// map.addLayer(qcLyr);
 
 		// District layer used to grab analysts' names for district assignments
 			var queryLyr = new FeatureLayer("https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_RETS_DistCnty_lookup/FeatureServer/0",{id: "Districts", outFields : ["DIST_NM", "GIS_ANLST", "GRID_ANLST", "DIST_ANLST", "CNTY_NM"]});				
@@ -1680,39 +1686,22 @@
 				attachmentEditor.showAttachments(evt.graphic,workflowLyr);
 			});
 
- 		// DEPRECATED..............put this function into workflowLyr on-click instead
-		// Map on-click event to filter selected feature in attribute table.  oID and previous oID checks simply prevents refreshing of the table if you click on the same point again
-    	// 	map.on("click", function(clickEvent){ 
-    	// 		console.log("@map on-click event results: ", clickEvent);
-    	// 		console.log("@map on-click, oID (if no new point feature is selected, this is the same as the last click): ", oID);
-    	// 		var objectIdArray = [oID]; 
-    	// 		if (previousID !==oID || oID !== undefined){
-					// 	console.log("New Selection: Running function to filter attribute table by selected features");
-	    //         		myFeatureTable.filterRecordsByIds([objectIdArray]);
-	    //         		previousID = oID;
-					// }
-					// else {
-					// 	console.log("Not a new selection: Not running function to filter attribute table by selected features");					
-					// }	
-    	// 	});
+		// Set cursor to pointer when hovering over a feature in the map - DEPRECATED
+			// array.forEach(layerList, cursorPointer);
+			// array.forEach(layerList, cursorDefault);
 
+			// function cursorPointer(layer){
+			// layer.on("mouse-over", function(){
+			//   map.setMapCursor ("pointer");
+			// });
+			// }
+			// function cursorDefault(layer){
+			// layer.on("mouse-out", function(){
+			//   map.setMapCursor ("default");
+			// });
+			// }  	
 
-		// Set cursor to pointer when hovering over a feature in the map
-			array.forEach(layerList, cursorPointer);
-			array.forEach(layerList, cursorDefault);
-
-			function cursorPointer(layer){
-			layer.on("mouse-over", function(){
-			  map.setMapCursor ("pointer");
-			});
-			}
-			function cursorDefault(layer){
-			layer.on("mouse-out", function(){
-			  map.setMapCursor ("default");
-			});
-			}  	
-
-	    // Populate filter dropdowns from query of workflow layer distinct values
+	    // Populate dropdowns from query of workflow layer distinct values, then use to filter workflow layer based on selection
   
         	// Get distinct list of GIS Analysts 
 			var queryTask = new QueryTask(serviceURL);
@@ -1731,7 +1720,8 @@
 	            	var name = this.attributes.GIS_ANLST;
 	            	$('#GISAnalystSel').append($(listItem).attr('value',name).html("<a href='#GISAnalystSel'>"+ name + "</a>"));
 	        	});
-					
+
+				// Get the value of the GIS Analyst dropdown menu for workflowLyr definition query	
 				$("#GISAnalystSel li").click(function(){
 					if ($(this).text() === "Clear"){
 			 			$("#analystBtn").text("Select a GIS Analyst").append(" <span class='caret'></span>");	
@@ -1764,6 +1754,7 @@
 	            	$('#GRIDAnalystSel').append($(listItem).attr('value',name).html("<a href='#GRIDAnalystSel'>"+ name +"</a>"));
 	        	});
 
+				// Get the value of the GRID Analyst dropdown menu for workflowLyr definition query
 			 	$("#GRIDAnalystSel li").click(function(){	
 			 		if ($(this).text() === "Clear"){
 			 			$("#GRIDAnalystBtn").text("Select a GRID Analyst").append(" <span class='caret'></span>");	
@@ -1777,7 +1768,7 @@
 				});
 			};
 
-			// Get distinct list of GRID Analysts
+			// Get distinct list of Routes
 			var queryTask3 = new QueryTask(serviceURL);  
 			var query3 = new Query();  
 			query3.where = "RTE_NM is not null";  // query for non-null values  
@@ -1795,6 +1786,7 @@
 	            	$('#routeSel').append($(listItem).attr('value',name).html("<a href='#routeSel'>"+ name +"</a>"));
 	        	});
 
+				// Get the value of the Route dropdown menu for workflowLyr definition query
 			 	$("#routeSel li").click(function(){	
 			 		if ($(this).text() === "Clear"){
 			 			$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");	
@@ -1808,63 +1800,45 @@
 				});
 			};
 
+			// Get distinct list of Years
+			var queryTask4 = new QueryTask(serviceURL);  
+			var query4 = new Query();  
+			query4.where = "YR_END is not null";  // query for non-null values  
+			query4.orderByFields = ["YR_END"];    // sort it so we won't have to later  
+			query4.returnGeometry = false;          // turn geometry off, required to be false when using 
+			query4.returnDistinctValues = true;  
+			query4.outFields = ["YR_END"];  
+			queryTask4.execute(query4).then(popYearList);
+
+			function popYearList (results){
+
+				$.each(results.features,function(){
+	            	var listItem = document.createElement('li');
+	            	var name = this.attributes.YR_END;
+	            	$('#yearSel').append($(listItem).attr('value',name).html("<a href='#yearSel'>"+ name +"</a>"));
+	        	});
+
+				// Get the value of the Year dropdown menu for workflowLyr definition query
+				 	$("#yearSel li").click(function(){
+				 	  if ($(this).text() === "Clear"){
+						$("#yearBtn").text("Select a Year").append(" <span class='caret'></span>");	
+						}
+					  else {
+						$("#yearBtn").text($(this).text()).append(" <span class='caret'></span>");		
+					  }			
+			 		  			 		
+				      var text = $(this).text();
+				      console.log(text);
+				      filterYear (text);
+					}); 
+			};		
+
 		// Check if form has been changed (if so, and if the user selects the template picker to add a new point, the user will be prompted to save first)
 			$("#attrForm :input").change(function() {
    				$("#attrForm").data("changed",true);
    				console.log("form has changed");
 			});
 
-        // Begin TEMP Assignment Filter...........................................................................................
-
-	   //      	var assignmentArray = [
-	   //      		"Brian Alt",
-				// 	"Chris Bardash",
-				// 	"Richard Barrientos",
-				// 	"Nicole Beecher",
-				// 	"Sam Bogle",
-				// 	"Jason Ferrell",
-				// 	"Eric Kinsey",
-				// 	"Jessica Lane",
-				// 	"Tom Neville",
-				// 	"John Phillips",
-				// 	"Grace Richey",
-				// 	"Jeremy Rogers",
-				// 	"Stephen Ross",
-				// 	"Travis Scruggs",
-				// 	"Matt Washburn",
-				// 	"George Sosa",
-				// 	"Joel Campbell"
-	   //      	];
-	   //      	$.each(assignmentArray,function(){
-	   //          	var listItem = document.createElement('li');
-	   //          	$('#assignmentSel').append($(listItem).attr('value',this).html("<a href='#assignmentSel'>"+ this +"</a>"));
-	   //      	});  
-
-	   //  	// Get the value of the Assignment dropdown menu for workflowLyr definition query
-			 // 	$("#assignmentSel li").click(function(){
-		 	// 	  $("#assignmentBtn").text($(this).text());
-			 //      var text = $(this).text();
-			 //      console.log(text);
-			 //      filterAssignment(text);
-				// });  
-
-		// End TEMP Assignment Filter...........................................................................................
-
-        // Get the value of the Analyst dropdown menu for workflowLyr definition query  THIS EVENT NOW HAPPENS UNDER A FUNCTION ABOVE (LEAVING HERE FOR NOW)
-		 // 	$("#GISAnalystSel li").click(function(){
-	 	// 	  $("#analystBtn").text($(this).text());
-		 //      var text = $(this).text();
-		 //      console.log(text);
-		 //      filterAnalyst(text);
-			// });  
-
-		// Get the value of the GRID Analyst dropdown menu for workflowLyr definition query THIS EVENT NOW HAPPENS UNDER A FUNCTION ABOVE (LEAVING HERE FOR NOW)
-		 // 	$("#GRIDAnalystSel li").click(function(){		 	  
-	 	// 	  $("#GRIDAnalystBtn").text($(this).text());	
-		 //      var text = $(this).text();
-		 //      console.log(text);
-		 //      filterGRIDAnalyst(text);
-			// });  
 
         // Get the value of the Status dropdown menu for workflowLyr definition query
 		 	$("#statusSel li").click(function(){
@@ -1892,20 +1866,6 @@
 		      console.log(text);
 		      filterPriority(text);
 			});  
-
-		// Get the value of the Year dropdown menu for workflowLyr definition query
-		 	$("#yearSel li").click(function(){
-		 	  if ($(this).text() === "Clear"){
-				$("#yearBtn").text("Select a Year").append(" <span class='caret'></span>");	
-				}
-			  else {
-				$("#yearBtn").text($(this).text()).append(" <span class='caret'></span>");		
-			  }			
-	 		  			 		
-		      var text = $(this).text();
-		      console.log(text);
-		      filterYear (text);
-			}); 
 
 		// Use the selected value of the dropdown to fire query to use for Status Table
 			$("#analystBtn" ).change(function() {
@@ -1959,37 +1919,10 @@
 			});	
 
 
-		// Get analysts at center of map when the extent changes
-			// map.on("extent-change", queryAnalystsBasedOnMapCenter);
-
 			
 
 
     // FUNCTIONS..........................................................................
-
-    	// Query for analysts at center of map when the extent changes
-   //  		function queryAnalystsBasedOnMapCenter(evt){
-			// 	center = map.extent.getCenter();
-			// 	// console.log(center);
-			// 	query = new Query();
-			//     query.geometry = center;
-
-			//   	queryLyr.queryFeatures(query, function (results){
-			//       GISAnlstDisplay= results.features[0].attributes.GIS_ANLST;
-			//       GRIDAnlstDisplay = results.features[0].attributes.GRID_ANLST;
-			//       DistAnlstDisplay = results.features[0].attributes.DIST_ANLST;
-			//       // console.log(GISAnlstDisplay);
-			//       // console.log(GRIDAnlstDisplay);
-			//       // console.log(DistAnlstDisplay);
-			//       if (GISAnlstDisplay === undefined){
-			//       	dojo.query("#analystDisplay").style("display", "none");
-			//       }
-			//       else {
-			//       document.getElementById("analystDisplay").innerHTML = "<span style='text-decoration: underline;''>" + "Analysts based on map center:" + "</span>" + "<br />" + "GIS Analyst: " + GISAnlstDisplay + "<br />" + "     GRID Analyst: " + GRIDAnlstDisplay + "<br />" + "     District Analyst: " + DistAnlstDisplay;
-			//       dojo.query("#analystDisplay").style("display", "block");
-			//   	  }	
-			//     });
-			// }  					
 
     	// Save Edits when Save button is clicked
     	 	function saveEdits(){
@@ -2131,31 +2064,6 @@
             	}
         	}
 
-        // MOVE THIS TO FUNCTION SECTION
-		// Check if the form is open and if it has been edited, then close or prompt to save
-			// function clearForm(){
-			// 	console.log("Runnning clearForm function");
-			// 	// Check if the template was selected while the attr form is being edited, and if so, popup a modal.			
-			// 	console.log("Checking if move is in progress? ", editToolbar.getCurrentState().isModified);
-			// 	console.log("Checking if attribute form has unsaved edits: ", $("#attrForm").data("changed"));	
-			// 	console.log(selectedFeatures);			
-			// 	if ($("#attrForm").data("changed") === true | editToolbar.getCurrentState().isModified === true) {
-			// 			console.log("Form has unsaved edits")
-			// 			$("#saveMod").modal('show'); // Pop up modal asking if user wants to save first
-			// 			}
-			// 	else {
-			// 		// close attribute form window and clear form or whatever else needs to happen so that data doesn't get plugged into the new point's attribute	
-			// 		console.log("No unsaved edits in attribute form.  Firing up template to add point, and clearing and closing attrSideNav.")
-			// 		$('#moveBtn').html("Move");
-			// 		$('#clearBtn').css("display", "block");
-			// 		$("#attrSideNav").css("width","0");
-	  //           	$("#attrForm").trigger("reset");
-			// 		workflowLyr.clearSelection();
-			// 		myFeatureTable.clearFilter();
-			// 	}
-			// }	
-    	
-
     	// Build attribute table
 
 	    	function loadTable(){
@@ -2218,19 +2126,6 @@
 	    	}
 	 
 		// Definition Query to filter workflow layer based on dropdown selections
-			// Begin TEMP Assignment filter..................................
-				// function filterAssignment (value){
-				// 	console.log(value);			
-				// 	if (value == "All Assignments") {
-			 //       		assignment ="";	
-				// 	}
-				// 	else {
-				// 		assignment = "Assignment = '" + value + "'";
-				// 	}
-				// 	console.log(assignment);
-				// 	buildDefExp();
-				// }
-			// End TEMP Assignment filter..................................
 
 			function filterAnalyst (value){
 				console.log(value);			
@@ -2314,11 +2209,6 @@
 				console.log(year);
 				console.log(assignment); //TEMP
 				expArray =[];
-				// TEMP Assignment filter
-				// if (assignment !== ""){
-				// 	expArray.push(assignment);
-				// }
-				// End TEMP Assignment filter
 				if (analyst !== ""){
 					expArray.push(analyst);
 				}
