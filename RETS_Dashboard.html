@@ -537,6 +537,13 @@
 							      <li value="Clear"><a href="#yearSel"><b>Clear</b></a></li>
 							    </ul>
 							  </div> 
+							  <div class="dropdown">
+							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="actvBtn" >Select an Activity
+						    	<span class="caret"></span></button>
+							    <ul id="actvSel" class="dropdown-menu">
+							      <li value="Clear"><a href="#actvSel"><b>Clear</b></a></li>
+							    </ul>
+							  </div> 
 							  <button id="clearFilterBtn" type="button" class="btn btn-sm "><span class="glyphicon glyphicon-remove"></span> Clear Filters</button>
 				        </div>
 				      </div>
@@ -611,7 +618,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="statAttr">Status:</label>
 		      <div class="col-sm-8">    
-			      <select class="form-control" id="statAttr" placeholder="Select Status" >
+			      <select class="form-control" id="statAttr" placeholder="Select a Status" >
 				    <option value="Not Started">Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -623,7 +630,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="priorAttr">Priority:</label>
 		      <div class="col-sm-8"> 
-		        <select class="form-control" id="priorAttr" placeholder="Select Priority" >
+		        <select class="form-control" id="priorAttr" placeholder="Select a Priority" >
 				    <option value="Yes">Yes</option>
 				    <option value="No" selected>No</option>
 			  	</select>
@@ -632,13 +639,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="yearAttr">Data Year:</label>
 		      <div class="col-sm-8"> 
-		        <select class="form-control" id="yearAttr" placeholder="Enter Year" >
-		        	<option value=""></option>
-				    <option value="2021">2021</option>
-				    <option value="2020">2020</option>
-				    <option value="2019">2019</option>
-				    <option value="2018">2018</option>
-				    <option value="2017">2017</option>
+		        <select class="form-control" id="yearAttr" placeholder="Select a Year" >
 			  	</select>
 		      </div>
 		    </div>
@@ -680,9 +681,17 @@
 		      </div>
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">
+		      <label class="control-label col-sm-3" for="actvAttr">Activity:</label>
+		      <div class="col-sm-8">          
+		       	<select class="form-control" id="actvAttr" placeholder="Select an Activity" >
+		       		<option value=""></option>
+			  	</select>
+		      </div>
+		    </div>
+		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="jobTypeAttr">Job Type:</label>
 		      <div class="col-sm-8"> 
-	           	  <select class="form-control" id="jobTypeAttr">
+	           	  <select class="form-control" id="jobTypeAttr" placeholder="Select a Job Type">
 				    <option value="Roadway Edit and Asset Update" selected >Roadway Edit and Asset Update</option>
 				    <option value="GRID Asset Job Only">GRID Asset Job Only</option>
 				    <option value="Basemap">Basemap</option>
@@ -692,7 +701,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="distRvwAttr">District Review:</label>
 		      <div class="col-sm-8"> 
-		          <select class="form-control" id="distRvwAttr">
+		          <select class="form-control" id="distRvwAttr" placeholder="Select a Status">
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -703,7 +712,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="etlStatAttr">ETL Status:</label>
 		      <div class="col-sm-8"> 
-		          <select class="form-control" id="etlStatAttr">
+		          <select class="form-control" id="etlStatAttr" placeholder="Select a Status">
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="Complete in GRID Pre">Complete in GRID Pre</option>
 				    <option value="Complete in GRID Prod">Complete in GRID Prod</option>
@@ -715,7 +724,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="onSysGridJobAttr">On-System GRID Job:</label>
 		      <div class="col-sm-8">
-		          <select class="form-control" id="onSysGridJobAttr" >
+		          <select class="form-control" id="onSysGridJobAttr" placeholder="Select a Status">
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -726,7 +735,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="offSysGridJobAttr">Off-System GRID Job:</label>
 		      <div class="col-sm-8"> 
-		          <select class="form-control" id="offSysGridJobAttr">
+		          <select class="form-control" id="offSysGridJobAttr" placeholder="Select a Status">
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -737,7 +746,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="distGridJobAttr">District GRID Job:</label>
 		      <div class="col-sm-8"> 
-		          <select class="form-control" id="distGridJobAttr">
+		          <select class="form-control" id="distGridJobAttr" placeholder="Select a Status">
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -1012,7 +1021,7 @@
 	  	var expArray = [];
 	  	var oID;
 	  	var previousID = '';
-	  	var appVersion = "Version 2.0.8"
+	  	var appVersion = "Version 2.0.9"
 	  	var GISAnlstDisplay;
 	    var GRIDAnlstDisplay;
 		var DistAnlstDisplay;
@@ -1073,7 +1082,7 @@
 				// serviceURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadway_Edits_Tracking_DEV/FeatureServer/0";
 			var workflowLyr = new FeatureLayer(serviceURL, {id:"Workflow",visible: true, outFields:["*"]});
 			workflowLyr.hasAttachments = true;	
-			map.addLayer(workflowLyr);	
+			map.addLayer(workflowLyr);
 
 			//Labeling				
 
@@ -1115,7 +1124,7 @@
 		  		"supportsQueryWithDistance" : true, 
 		  		"supportsReturningQueryExtent" : true, 
 		  		"supportsAdvancedQueries" : true,
-			}};
+			}};			
 
 			// Set selection symbol for roadwayLyr
 			// var selectionSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0,0.5]), 7);
@@ -1451,6 +1460,7 @@
      	  		$('#gridAnalAttr').val(evt.graphic.attributes.GRID_ANLST);
      	  		$('#distAnalAttr').val(evt.graphic.attributes.DIST_ANLST);
      	  		$('#descAttr').val(evt.graphic.attributes.DESC_);
+     	  		$('#actvAttr').val(evt.graphic.attributes.ACTV);
      	  		$('#jobTypeAttr').val(evt.graphic.attributes.JB_TYPE);
      	  		$('#distRvwAttr').val(evt.graphic.attributes.DIST_REVW);
      	  		$('#etlStatAttr').val(evt.graphic.attributes.ETL_STAT);
@@ -1507,6 +1517,8 @@
 				prior ="";
 				$("#yearBtn").text("Select a Year").append(" <span class='caret'></span>");	
 				year ="";
+				$("#actvBtn").text("Select an Activity").append(" <span class='caret'></span>");	
+				actv ="";
 				buildDefExp();
 			});	
 
@@ -1718,6 +1730,7 @@
 				$.each(results.features,function(){
 	            	var listItem = document.createElement('li');
 	            	var name = this.attributes.GIS_ANLST;
+	            	// Append values into filter dropdown in the TOC
 	            	$('#GISAnalystSel').append($(listItem).attr('value',name).html("<a href='#GISAnalystSel'>"+ name + "</a>"));
 	        	});
 
@@ -1751,6 +1764,7 @@
 				$.each(results.features,function(){
 	            	var listItem = document.createElement('li');
 	            	var name = this.attributes.GRID_ANLST;
+	            	// Append values into filter dropdown in the TOC
 	            	$('#GRIDAnalystSel').append($(listItem).attr('value',name).html("<a href='#GRIDAnalystSel'>"+ name +"</a>"));
 	        	});
 
@@ -1783,6 +1797,7 @@
 				$.each(results.features,function(){
 	            	var listItem = document.createElement('li');
 	            	var name = this.attributes.RTE_NM;
+	            	// Append values into filter dropdown in the TOC
 	            	$('#routeSel').append($(listItem).attr('value',name).html("<a href='#routeSel'>"+ name +"</a>"));
 	        	});
 
@@ -1815,7 +1830,10 @@
 				$.each(results.features,function(){
 	            	var listItem = document.createElement('li');
 	            	var name = this.attributes.YR_END;
+	            	// Append values into filter dropdown on the TOC
 	            	$('#yearSel').append($(listItem).attr('value',name).html("<a href='#yearSel'>"+ name +"</a>"));
+	            	// Append values into Data Year dropdown on Attribute Form
+	            	$('#yearAttr').append($('<option></option>').val(name).html(name));
 	        	});
 
 				// Get the value of the Year dropdown menu for workflowLyr definition query
@@ -1830,6 +1848,48 @@
 				      var text = $(this).text();
 				      console.log(text);
 				      filterYear (text);
+					}); 
+			};	
+
+			// Get distinct list of Activites
+			var queryTask5 = new QueryTask(serviceURL);  
+			var query5 = new Query();  
+			query5.where = "ACTV is not null";  // query for non-null values  
+			query5.orderByFields = ["ACTV"];    // sort it so we won't have to later  
+			query5.returnGeometry = false;          // turn geometry off, required to be false when using 
+			query5.returnDistinctValues = true;  
+			query5.outFields = ["ACTV"];  
+			queryTask5.execute(query5).then(popActvList);
+
+			function popActvList (results){
+				// Populate select dropdown with coded domain values for ACTV field from workflowLyr
+				var domains = workflowLyr.fields[26].domain.codedValues;
+				$.each(domains, function(){
+					domNm = this.name;
+					console.log(domNm);
+					// Append values into dropdown on Attribute Form
+	            	$('#actvAttr').append($('<option></option>').val(domNm).html(domNm));
+				});
+
+				$.each(results.features,function(){
+	            	var listItem = document.createElement('li');
+	            	var name = this.attributes.ACTV;
+	            	// Append values into filter dropdown on the TOC
+	            	$('#actvSel').append($(listItem).attr('value',name).html("<a href='#yearSel'>"+ name +"</a>"));	            	
+	        	});
+
+				// Get the value of the Year dropdown menu for workflowLyr definition query
+				 	$("#actvSel li").click(function(){
+				 	  if ($(this).text() === "Clear"){
+						$("#actvBtn").text("Select an Activity").append(" <span class='caret'></span>");	
+						}
+					  else {
+						$("#actvBtn").text($(this).text()).append(" <span class='caret'></span>");		
+					  }			
+			 		  			 		
+				      var text = $(this).text();
+				      console.log(text);
+				      filterActv (text);
 					}); 
 			};		
 
@@ -1941,7 +2001,8 @@
     	 		selectedFeatures[0].attributes.GIS_ANLST = $('#gisAnalAttr').val();
     	 		selectedFeatures[0].attributes.GRID_ANLST = $('#gridAnalAttr').val();
     	 		selectedFeatures[0].attributes.DIST_ANLST = $('#distAnalAttr').val();
-    	 		selectedFeatures[0].attributes.DESC_ = $('#descAttr').val();
+    	 		selectedFeatures[0].attributes.DESC_ = $('#descAttr').val();    	 		    	 		
+    	 		selectedFeatures[0].attributes.ACTV = $('#actvAttr').val();
     	 		selectedFeatures[0].attributes.JB_TYPE = $('#jobTypeAttr').val();
     	 		selectedFeatures[0].attributes.DIST_REVW = $('#distRvwAttr').val();
     	 		selectedFeatures[0].attributes.ETL_STAT = $('#etlStatAttr').val();
@@ -2199,6 +2260,19 @@
 				buildDefExp();
 			}
 
+			function filterActv (value){
+				console.log(value);			
+				if (value == "Clear") {
+		       		actv ="";	
+				}	
+				else {
+					actv = "ACTV = '" + value + "'";
+				}
+				console.log(actv);
+				buildDefExp();
+			}
+			
+
 			function buildDefExp(exp){
 				console.log("Running Build Definition Expression function");				
 				console.log(GRIDAnalyst);
@@ -2207,7 +2281,7 @@
 				console.log(prior);
 				console.log(stat);			
 				console.log(year);
-				console.log(assignment); //TEMP
+				console.log(actv);
 				expArray =[];
 				if (analyst !== ""){
 					expArray.push(analyst);
@@ -2226,6 +2300,9 @@
 				}
 				if (year !== ""){
 					expArray.push(year);
+				}
+				if (actv !== ""){
+					expArray.push(actv);
 				}
 				// console.log(exp);
 				console.log(expArray);	
