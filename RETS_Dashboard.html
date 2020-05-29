@@ -389,6 +389,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="https://js.arcgis.com/3.24/"></script>
+    <script src="https://cdn.jsdelivr.net/gh/TxDOT/Framework/framework_1.0.js"></script>
 
   </head>
 
@@ -482,13 +483,13 @@
 				    <div class="panel panel-default">
 				      <div class="panel-heading">
 				        <h4 class="panel-title">
-				          <a data-toggle="collapse" href="#collapse4">Filters</a>
+				          <a data-toggle="collapse" href="#collapse4">Quick Filters</a>
 				        </h4>
 				      </div>
 				      <div id="collapse4" class="panel-collapse collapse">
-				        <div class="panel-body">
+				        <div class="panel-body" style="padding-left: 3pt;">
 						      <div class="dropdown">
-							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="analystBtn" >Select an GIS Analyst
+							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="analystBtn" >Select a GIS Analyst
 							    <span class="caret"></span></button>
 							    <ul id="GISAnalystSel" class="dropdown-menu">
 							      <li value="Clear"><a href="#GISAnalystSel"><b>Clear</b></a></li>
@@ -546,15 +547,41 @@
 							  </div>
 							  <button id="clearFilterBtn" type="button" class="btn btn-sm "><span class="glyphicon glyphicon-remove"></span> Clear Filters</button>
 				        </div>
+
+
+				      </div>
+				    </div>
+                    <div class="panel panel-default">
+				      <div class="panel-heading">
+				        <h4 class="panel-title">
+				          <a data-toggle="collapse" href="#collapse5">Advanced Query</a>
+				        </h4>
+				      </div>
+				      <div id="collapse5" class="panel-collapse collapse">
+                          <div style="padding-left: 3px;" class="form-group">
+
+  		                  </div>
+                          <div class="panel-body" style="padding-left: 3pt;">
+                              <div class="col-sm-16" style="padding-left: 6pt;">
+  		                        <textarea class="form-control" rows="5" id="sqlBox" placeholder="Enter SQL here" name="sqlBox" value=""></textarea>
+                                <br>
+                                <button id="validateSQLBtn" type="button" class="btn btn-xs "><span class="glyphicon glyphicon-ok"></span> Validate</button>
+                                <button id="runSQLBtn" type="button" class="btn btn-xs "><span class="glyphicon glyphicon-search"></span> Run</button>
+                                <button id="clearSQLBtn" type="button" class="btn btn-xs "><span class="glyphicon glyphicon-remove"></span> Clear</button>
+  		  		              </div>
+
+
+
+                          </div>
 				      </div>
 				    </div>
 				    <div class="panel panel-default">
 				      <div class="panel-heading">
 				        <h4 class="panel-title">
-				        	<a data-toggle="collapse" href="#collapse5">Table Options</a>
+				        	<a data-toggle="collapse" href="#collapse6">Table Options</a>
 			        	</h4>
 		        	  </div>
-		        	  <div id="collapse5" class="panel-collapse collapse in">
+		        	  <div id="collapse6" class="panel-collapse collapse in">
 				        <div class="panel-body">
 						  <ul class="list-group">
 					        <li id="tableToggle" class="list-group-item hover">Close Table</li>
@@ -991,7 +1018,7 @@
                 });
             IdentityManager.registerOAuthInfos([info]);
             id = IdentityManager.getCredential(info.portalUrl + "/sharing");
-            userName= id.results["0"].userId;
+            userName= id.results[0].userId;
 
 	// VARIABLES**********************************************************************************************
 
@@ -1504,21 +1531,29 @@
 
 		// Clear Filters
 			$('#clearFilterBtn').click(function(){
-				console.log("Clear Filters");
-				$("#analystBtn").text("Select a GIS Analyst").append(" <span class='caret'></span>");
-				analyst = "";
-				$("#GRIDAnalystBtn").text("Select a GRID Analyst").append(" <span class='caret'></span>");
-				GRIDAnalyst ="";
-				$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");
-				route ="";
-				$("#statusBtn").text("Select a Status").append(" <span class='caret'></span>");
-				stat ="";
-				$("#priorityBtn").text("Select a Priority").append(" <span class='caret'></span>");
-				prior ="";
-				$("#yearBtn").text("Select a Year").append(" <span class='caret'></span>");
-				year ="";
-				$("#actvBtn").text("Select an Activity").append(" <span class='caret'></span>");
-				actv ="";
+                clearFilters();
+                buildDefExp();
+            });
+
+        // Validate SQL via REST, get token from user login
+            $('#validateSQLBtn').click(function(){
+                let theSQL = $('#sqlBox').val();
+                let theToken = id.results[0].token;
+                validateSQL(theSQL,theToken);
+            });
+
+        // Set DefExp with SQL from user
+            $('#runSQLBtn').click(function(){
+                clearFilters();
+                let theSQL = $('#sqlBox').val();
+                buildDefExp();
+                setDefExp(theSQL);
+            });
+
+        // Clear filters and text area
+            $('#clearSQLBtn').click(function(){
+                let theSQL = $('#sqlBox').val("");
+				clearFilters();
 				buildDefExp();
 			});
 
@@ -2347,7 +2382,48 @@
 				    map.setExtent(zoomExtent, true);
 				});
 			}
-
+            // Clearing dropdown filters and reset defExp
+            function clearFilters(){
+                $("#analystBtn").text("Select a GIS Analyst").append(" <span class='caret'></span>");
+				analyst = "";
+				$("#GRIDAnalystBtn").text("Select a GRID Analyst").append(" <span class='caret'></span>");
+				GRIDAnalyst ="";
+				$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");
+				route ="";
+				$("#statusBtn").text("Select a Status").append(" <span class='caret'></span>");
+				stat ="";
+				$("#priorityBtn").text("Select a Priority").append(" <span class='caret'></span>");
+				prior ="";
+				$("#yearBtn").text("Select a Year").append(" <span class='caret'></span>");
+				year ="";
+				$("#actvBtn").text("Select an Activity").append(" <span class='caret'></span>");
+				actv ="";
+				buildDefExp();
+            }
+            // Validate SQL against REST API using txdot framework CDN
+            function validateSQL(sql,token){
+                let baseURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_Roadway_Edits_Tracking/FeatureServer/0";
+                let operation = "/validateSQL?sql=";
+                let theSQL = sql;
+                let sqlType = "&sqlType=where";
+                let outputType = "&f=pjson";
+                let theToken = "&token="+ token;
+                let theURL = baseURL+operation+theSQL+sqlType+outputType+theToken;
+                xmlRequestWithProcessing(theURL,isValid); //now send xhr request using txdot framework
+            }
+            // Callback function that handles xml response
+            function isValid(resp){
+                let msg = JSON.stringify(resp.validationErrors);
+                console.log(msg);
+                if (resp.isValidSQL == true){
+                    // will alert for now, need to add green check icon
+                    alert("SQL is valid");
+                }
+                else {
+                    // will alert for now, need to add red x icon 
+                    alert(msg);
+                }
+            }
 
 		// Query workflowLyr for Status and update Status Table
 
