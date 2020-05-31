@@ -388,6 +388,7 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<script src="https://js.arcgis.com/3.24/"></script>
     <script src="https://cdn.jsdelivr.net/gh/TxDOT/Framework/framework_1.0.js"></script>
 
@@ -545,7 +546,7 @@
 							      <li value="Clear"><a href="#actvSel"><b>Clear</b></a></li>
 							    </ul>
 							  </div>
-							  <button id="clearFilterBtn" type="button" class="btn btn-sm "><span class="glyphicon glyphicon-remove"></span> Clear Filters</button>
+							  <button id="clearFilterBtn" type="button" class="btn btn-default btn-sm "><span class="glyphicon glyphicon-remove"></span> Clear Filters</button>
 				        </div>
 
 
@@ -563,15 +564,15 @@
   		                  </div>
                           <div class="panel-body" style="padding-left: 3pt;">
                               <div class="col-sm-16" style="padding-left: 6pt;">
-  		                        <textarea class="form-control" rows="5" id="sqlBox" placeholder="Enter SQL here" name="sqlBox" value=""></textarea>
+  		                        <textarea class="form-control" rows="5" id="sqlBox" placeholder="Enter SQL WHERE clause here" name="sqlBox" value="" spellcheck="false"></textarea>
                                 <br>
-                                <button id="validateSQLBtn" type="button" class="btn btn-xs "><span class="glyphicon glyphicon-ok"></span> Validate</button>
-                                <button id="runSQLBtn" type="button" class="btn btn-xs "><span class="glyphicon glyphicon-search"></span> Run</button>
-                                <button id="clearSQLBtn" type="button" class="btn btn-xs "><span class="glyphicon glyphicon-remove"></span> Clear</button>
-  		  		              </div>
-
-
-
+                                <button id="infoBtn" type="button" class="btn btn-default" title="View Schema" data-toggle='modal' data-target='#schemaMod'><span class="glyphicon glyphicon-info-sign"></span></button>
+                                <button id="validateSQLBtn" type="button" class="btn btn-default " title="Validate SQL"><span class="glyphicon glyphicon-ok"></span></button>
+                                <button id="runSQLBtn" type="button" class="btn btn-default" title="Apply Filter"><span class="glyphicon glyphicon-filter"></span></button>
+                                <button id="exportSQLBtn" type="button" class="btn btn-default" title="Jump to Endpoint"><span class="glyphicon glyphicon-export"></span></button>
+                                <button id="eraseBtn" type="button" class="btn btn-default" title="Erase Text"><span class="glyphicon glyphicon-erase"></span></button>
+                                <button id="resetSQLBtn" type="button" class="btn btn-default" title="Reset Filters"><span class="glyphicon glyphicon-remove"></span></button>
+                              </div>
                           </div>
 				      </div>
 				    </div>
@@ -899,6 +900,84 @@
 		  </div>
 		</div>
 
+        <!-- Modal for service schema and viewing REST endpoint -->
+        <!-- About Modal -->
+        <div class="modal fade" id="schemaMod" tabindex="-1" role="dialog" aria-labelledby="schemaModLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                  <h3 class="modal-title" id="schemaModLabel">RETS Service Schema</h3>
+              </div>
+              <div class="modal-body">
+                <h4>Fields:</h4>
+                <br>
+                <ul>
+                    <li><strong>OBJECTID </strong>(type: esriFieldTypeOID, alias: OBJECTID, SQL Type: sqlTypeOther, length: 0, nullable: false, editable: false)
+                    </li>
+                    <li><strong>RTE_NM </strong>(type: esriFieldTypeString, alias: Route Name, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>AFFECT_RTE </strong>(type: esriFieldTypeString, alias: Affected Routes, SQL Type: sqlTypeOther, length: 255, nullable: true, editable: true)
+                    </li>
+                    <li><strong>MRT_NBR </strong>(type: esriFieldTypeString, alias: MRT Number, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>MO_NBR </strong>(type: esriFieldTypeString, alias: Minute Order Number, SQL Type: sqlTypeOther, length: 255, nullable: true, editable: true)
+                    </li>
+                    <li><strong>STAT </strong>(type: esriFieldTypeString, alias: Status, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>PRTY </strong>(type: esriFieldTypeString, alias: Priority, SQL Type: sqlTypeOther, length: 10, nullable: true, editable: true)
+                    </li>
+                    <li><strong>DIST_NM </strong>(type: esriFieldTypeString, alias: District Name, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>CNTY_NM </strong>(type: esriFieldTypeString, alias: County Name, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>GIS_ANLST </strong>(type: esriFieldTypeString, alias: GIS Analyst, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>GRID_ANLST </strong>(type: esriFieldTypeString, alias: GRID Analyst, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>DIST_ANLST </strong>(type: esriFieldTypeString, alias: District Analyst, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>DESC_ </strong>(type: esriFieldTypeString, alias: Description, SQL Type: sqlTypeOther, length: 255, nullable: true, editable: true)
+                    </li>
+                    <li><strong>JB_TYPE </strong>(type: esriFieldTypeString, alias: Job Type, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>DIST_REVW </strong>(type: esriFieldTypeString, alias: District Review, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>ETL_STAT </strong>(type: esriFieldTypeString, alias: ETL Status, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>ON_SYS_JOB </strong>(type: esriFieldTypeString, alias: On-System GRID Job, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>OFF_SYS_JOB </strong>(type: esriFieldTypeString, alias: Off-System GRID Job, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>DIST_JOB </strong>(type: esriFieldTypeString, alias: District GRID Job, SQL Type: sqlTypeOther, length: 30, nullable: true, editable: true)
+                    </li>
+                    <li><strong>UPDT_CMNT </strong>(type: esriFieldTypeString, alias: Update Comments, SQL Type: sqlTypeOther, length: 2000, nullable: true, editable: true)
+                    </li>
+                    <li><strong>MSG </strong>(type: esriFieldTypeString, alias: Message, SQL Type: sqlTypeOther, length: 255, nullable: true, editable: true)
+                    </li>
+                    <li><strong>CreationDate </strong>(type: esriFieldTypeDate, alias: CreationDate, SQL Type: sqlTypeOther, length: 8, nullable: true, editable: false)
+                    </li>
+                    <li><strong>Creator </strong>(type: esriFieldTypeString, alias: Creator, SQL Type: sqlTypeOther, length: 128, nullable: true, editable: false)
+                    </li>
+                    <li><strong>EditDate </strong>(type: esriFieldTypeDate, alias: EditDate, SQL Type: sqlTypeOther, length: 8, nullable: true, editable: false)
+                    </li>
+                    <li><strong>Editor </strong>(type: esriFieldTypeString, alias: Editor, SQL Type: sqlTypeOther, length: 128, nullable: true, editable: false)
+                    </li>
+                    <li><strong>YR_END </strong>(type: esriFieldTypeString, alias: Year End, SQL Type: sqlTypeOther, length: 10, nullable: true, editable: true)
+                    </li>
+                    <li><strong>ACTV </strong>(type: esriFieldTypeString, alias: Activity, SQL Type: sqlTypeOther, length: 50, nullable: true, editable: true)
+                    </li>
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
+                <button type="button" class="btn btn-default" id="viewRESTBtn" data-dismiss="modal"><span class="glyphicon glyphicon-link"></span> View REST Endpoint</button>
+              </div>
+            </div>
+          </div>
+        </div>
 	</div>
 
 	<script>
@@ -1535,6 +1614,13 @@
                 buildDefExp();
             });
 
+        // Access service REST endpoint to see schema
+            $('#viewRESTBtn').click(function(){
+                let baseURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_Roadway_Edits_Tracking/FeatureServer/0";
+                let theToken = id.results[0].token;
+                window.open(baseURL+"?token="+theToken);
+            });
+
         // Validate SQL via REST, get token from user login
             $('#validateSQLBtn').click(function(){
                 let theSQL = $('#sqlBox').val();
@@ -1550,8 +1636,22 @@
                 setDefExp(theSQL);
             });
 
-        // Clear filters and text area
-            $('#clearSQLBtn').click(function(){
+        // For now, Export will direct to REST endpoint with WHERE clause populated, need to add logic that parses complex queries
+            $('#exportSQLBtn').click(function(){
+                let theSQL = $('#sqlBox').val();
+                let baseURL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_Roadway_Edits_Tracking/FeatureServer/0";
+                let theToken = id.results[0].token;
+                window.open(baseURL+"/query?where="+theSQL+"&token="+theToken);
+            });
+
+
+        // Erase text area
+            $('#eraseBtn').click(function(){
+                $('#sqlBox').val("");
+            });
+
+        // Reset filters and text area
+            $('#resetSQLBtn').click(function(){
                 let theSQL = $('#sqlBox').val("");
 				clearFilters();
 				buildDefExp();
@@ -2409,22 +2509,41 @@
                 let outputType = "&f=pjson";
                 let theToken = "&token="+ token;
                 let theURL = baseURL+operation+theSQL+sqlType+outputType+theToken;
-                xmlRequestWithProcessing(theURL,isValid); //now send xhr request using txdot framework
+                xmlRequestWithProcessing(theURL,processResponse); //now send xhr request using txdot framework
             }
             // Callback function that handles xml response
-            function isValid(resp){
-                let msg = JSON.stringify(resp.validationErrors);
-                console.log(msg);
-                if (resp.isValidSQL == true){
-                    // will alert for now, need to add green check icon
-                    alert("SQL is valid");
+            function processResponse(resp){
+                if (resp != null){
+                    if (resp.isValidSQL == true){
+                        swal({
+                            text: "SQL is Valid",
+                            icon: "success",
+                            timer: 1000,
+                            buttons: false
+                        });
+                    }
+                    else {
+                        // formatting error response for display in alert modal
+                        let msgStr = JSON.stringify(resp.validationErrors,['errorCode','description'],'\t');
+                        let msg = msgStr.replace(/[{}",.]/g, '');
+                        let formatMsg = msg.substring(1, msg.length-1);
+                        swal({
+                            title: "Invalid SQL",
+                            text: formatMsg,
+                            // icon: "error",
+                            dangerMode: true
+                        });
+                    }
                 }
                 else {
-                    // will alert for now, need to add red x icon 
-                    alert(msg);
+                    swal({
+                        title: "Invalid SQL",
+                        text: "Enter a valid expression",
+                        // icon: "error",
+                        dangerMode: true
+                    });
                 }
             }
-
 		// Query workflowLyr for Status and update Status Table
 
 			function queryStatus(){
