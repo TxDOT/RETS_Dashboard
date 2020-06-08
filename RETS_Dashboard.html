@@ -58,6 +58,21 @@
 	 }
 
 	/* SIDE NAVS******************************************************************* */
+	
+	input:invalid {
+		border-color: red;
+	}
+	textarea:invalid {
+		border-color: red;
+	}
+	select:invalid {
+		border-color: red;
+	}
+
+	.invalid {
+		border-color: red;
+	}
+
 	.sidenav {
 	    height: 100%; /* 100% Full-height */
 	    width: 0;
@@ -234,7 +249,7 @@
 	}
 
 	.charWarning {
-		color: red;
+		color: dimgray;
 	}
 
      /* Remove Esri's title from the attachment div since the modal already has a title*/
@@ -279,13 +294,7 @@
 	}	
 	.arcgisSearch .searchIcon {
 	font-weight: bold;
-	}			
-
-	#formPanel {
-		width: 300px;
-		height: 100%;
-		right: 0;
-	}
+	}	
 
 	/* MAP********************************************************/
 	#mapDiv{
@@ -581,7 +590,7 @@
 		  <div class="col-sm-offset-3 col-sm-8">
 		  	<h3>Attribute Editor</h3>
   		  </div>
-		  <form id="attrForm" class="form-horizontal" action="/action_page.php">
+		  <form id="attrForm" class="form-horizontal" novalidate>
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="retsIdAttr">RETS ID:</label>
 		      <div class="col-sm-8">
@@ -591,7 +600,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="rteNameAttr">Route Name:</label>
 		      <div class="col-sm-8">          
-		        <input type="text" class="form-control" id="rteNameAttr" placeholder="Enter Route Name" name="retNameAttr" value="">
+		        <input type="text" class="form-control" id="rteNameAttr" placeholder="Enter Route Name" name="retNameAttr" value="" required>
 		      </div>
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">
@@ -603,13 +612,13 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="mrtNbrAttr">MRT Number:</label>
 		      <div class="col-sm-8">          
-		        <input type="text" class="form-control" id="mrtNbrAttr" placeholder="Enter MRT Number" name="mrtNbrAttr" value="">
+		        <input type="text" class="form-control" id="mrtNbrAttr" placeholder="Enter MRT Number" name="mrtNbrAttr" value="" >
 		      </div>
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="minOrderAttr">Minute Order:</label>
 		      <div class="col-sm-6">          
-		        <input type="number" class="form-control" id="minOrderAttr" placeholder="Enter Minute Order" name="minOrderAttr" value="">
+		        <input type="number" min="1" class="form-control" id="minOrderAttr" placeholder="Enter Minute Order" name="minOrderAttr" value="">
 		      </div>
 		      <div class="col-sm-2">          
 		        <button id="moBtn" type="button" class="btn btn-default pull-right" data-toggle="tooltip" data-placement="top" title="Look Up Minute Order"><span class="glyphicon glyphicon-link"></span></button>
@@ -676,7 +685,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="descAttr">Description:</label>
 		      <div class="col-sm-8">          
-		        <textarea class="form-control" rows="5" maxlength="255" id="descAttr" placeholder="Enter a detailed description" name="descAttr" value=""></textarea>
+		        <textarea class="form-control" rows="5" maxlength="255" id="descAttr" placeholder="Enter a detailed description" name="descAttr" value="" required></textarea>
 		        <div class="charWarning" id="descRemain"> </div>
 		      </div>
 		    </div>
@@ -691,7 +700,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="jobTypeAttr">Job Type:</label>
 		      <div class="col-sm-8"> 
-	           	  <select class="form-control" id="jobTypeAttr" placeholder="Select a Job Type">
+	           	  <select class="form-control" id="jobTypeAttr" placeholder="Select a Job Type" required>
 				    <option value="Roadway Edit and Asset Update" selected >Roadway Edit and Asset Update</option>
 				    <option value="GRID Asset Job Only">GRID Asset Job Only</option>
 				    <option value="Basemap">Basemap</option>
@@ -701,7 +710,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="distRvwAttr">District Review:</label>
 		      <div class="col-sm-8"> 
-		          <select class="form-control" id="distRvwAttr" placeholder="Select a Status">
+		          <select class="form-control" id="distRvwAttr" placeholder="Select a Status" required>
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -712,7 +721,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="etlStatAttr">ETL Status:</label>
 		      <div class="col-sm-8"> 
-		          <select class="form-control" id="etlStatAttr" placeholder="Select a Status">
+		          <select class="form-control" id="etlStatAttr" placeholder="Select a Status" required>
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="Complete in GRID Pre">Complete in GRID Pre</option>
 				    <option value="Complete in GRID Prod">Complete in GRID Prod</option>
@@ -724,7 +733,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="onSysGridJobAttr">On-System GRID Job:</label>
 		      <div class="col-sm-8">
-		          <select class="form-control" id="onSysGridJobAttr" placeholder="Select a Status">
+		          <select class="form-control" id="onSysGridJobAttr" placeholder="Select a Status" required>
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -735,7 +744,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="offSysGridJobAttr">Off-System GRID Job:</label>
 		      <div class="col-sm-8"> 
-		          <select class="form-control" id="offSysGridJobAttr" placeholder="Select a Status">
+		          <select class="form-control" id="offSysGridJobAttr" placeholder="Select a Status" required>
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -746,7 +755,7 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="distGridJobAttr">District GRID Job:</label>
 		      <div class="col-sm-8"> 
-		          <select class="form-control" id="distGridJobAttr" placeholder="Select a Status">
+		          <select class="form-control" id="distGridJobAttr" placeholder="Select a Status" required>
 				    <option value="Not Started" selected >Not Started</option>
 				    <option value="In Progress">In Progress</option>
 				    <option value="Complete">Complete</option>
@@ -768,6 +777,13 @@
 		        <div class="charWarning" id="msgRemain"> </div>
 		      </div>
 		    </div>
+		   <!--  <div style="padding-left: 5px;"class="form-group">
+		      <label class="control-label col-sm-3" for="msgAttr">Upload Your Favorite File:</label>
+		      <div class="col-sm-8">          
+		        <input type="file" class="form-control-file" id="exampleFormControlFile1">
+		        <div class="charWarning" id="msgRemain"> </div>
+		      </div>
+		    </div> -->
 		    <div style="padding-left: 5px;"class="form-group">        
 		      <div class="col-sm-offset-3 col-sm-8">
 		        <button type="button" class="btn btn-success save" id="saveBtn">Save</button>
@@ -1374,6 +1390,32 @@
 				// $("#dashMod").modal()
 			}
 
+		// events for controlling attribute form validation css
+			$('#yearAttr').change(function(){
+				$('#yearAttr').removeClass('invalid');
+			});
+			$('#priorAttr').change(function(){
+				$('#priorAttr').removeClass('invalid');
+			});
+			$('#etlStatAttr').change(function(){
+				$('#etlStatAttr').removeClass('invalid');
+			});
+			$('#distRvwAttr').change(function(){
+				$('#distRvwAttr').removeClass('invalid');
+			});
+			$('#onSysGridJobAttr').change(function(){
+				$('#onSysGridJobAttr').removeClass('invalid');
+			});
+			$('#offSysGridJobAttr').change(function(){
+				$('#offSysGridJobAttr').removeClass('invalid');
+			});
+			$('#distGridJobAttr').change(function(){
+				$('#distGridJobAttr').removeClass('invalid');
+			});
+			$('#minOrderAttr').change(function(){
+				$('#minOrderAttr').removeClass('invalid');
+			});
+
 		// Character counters			
 	        $('#descAttr').keyup(function() {	            ;
 	            $('#descRemain').text(255 - $(this).val().length + " characters remaining");
@@ -1862,7 +1904,7 @@
 			queryTask5.execute(query5).then(popActvList);
 
 			function popActvList (results){
-				// Populate select dropdown with coded domain values for ACTV field from workflowLyr
+				// Populate the Activity dropdown in the Attribute Pane with coded domain values from the workflowLyr
 				var domains = workflowLyr.fields[26].domain.codedValues;
 				$.each(domains, function(){
 					domNm = this.name;
@@ -1870,7 +1912,7 @@
 					// Append values into dropdown on Attribute Form
 	            	$('#actvAttr').append($('<option></option>').val(domNm).html(domNm));
 				});
-
+				// Populate the Activity (filter) dropdown in the TOC with values from the workflorLyr (not using domains here, since we only want to be able to select a filter for valid options, i.e. don't want to be able to filter on domain values that don't have any records in the table)
 				$.each(results.features,function(){
 	            	var listItem = document.createElement('li');
 	            	var name = this.attributes.ACTV;
@@ -1957,11 +1999,8 @@
 
 		// Save edits
 			$('.save').click(function (){				
-				console.log("Save Button clicked");
-				$('#attrForm').data("changed", "false"); 
-				$('#mask').css("display", "block");
-				$('#loader').css("display", "block");
-				saveEdits();
+				console.log("Save Button clicked");				
+				validateForm();
 			});
 
 		// Delete edits
@@ -1984,47 +2023,116 @@
 
     // FUNCTIONS..........................................................................
 
-    	// Save Edits when Save button is clicked
-    	 	function saveEdits(){
-	            console.log("Saving edits"); 
-            // Populate the graphic's attributes with any new values from the form
-    	 		console.log("Selected feature (used for saving edits): ", selectedFeatures);
-    	 		selectedFeatures[0].attributes.RTE_NM = $('#rteNameAttr').val();    	 		
-    	 		selectedFeatures[0].attributes.YR_END = $('#yearAttr').val();
-    	 		selectedFeatures[0].attributes.AFFECT_RTE = $('#affctRtesAttr').val();
-    	 		selectedFeatures[0].attributes.MRT_NBR = $('#mrtNbrAttr').val();
-    	 		selectedFeatures[0].attributes.MO_NBR = $('#minOrderAttr').val();
-    	 		selectedFeatures[0].attributes.STAT = $('#statAttr').val();
-    	 		selectedFeatures[0].attributes.PRTY = $('#priorAttr').val();
-    	 		selectedFeatures[0].attributes.DIST_NM = $('#distNmAttr').val();
-    	 		selectedFeatures[0].attributes.CNTY_NM = $('#cntyNmAttr').val();
-    	 		selectedFeatures[0].attributes.GIS_ANLST = $('#gisAnalAttr').val();
-    	 		selectedFeatures[0].attributes.GRID_ANLST = $('#gridAnalAttr').val();
-    	 		selectedFeatures[0].attributes.DIST_ANLST = $('#distAnalAttr').val();
-    	 		selectedFeatures[0].attributes.DESC_ = $('#descAttr').val();    	 		    	 		
-    	 		selectedFeatures[0].attributes.ACTV = $('#actvAttr').val();
-    	 		selectedFeatures[0].attributes.JB_TYPE = $('#jobTypeAttr').val();
-    	 		selectedFeatures[0].attributes.DIST_REVW = $('#distRvwAttr').val();
-    	 		selectedFeatures[0].attributes.ETL_STAT = $('#etlStatAttr').val();
-    	 		selectedFeatures[0].attributes.ON_SYS_JOB = $('#onSysGridJobAttr').val();
-    	 		selectedFeatures[0].attributes.OFF_SYS_JOB = $('#offSysGridJobAttr').val();
-    	 		selectedFeatures[0].attributes.DIST_JOB = $('#distGridJobAttr').val();
-    	 		selectedFeatures[0].attributes.UPDT_CMNT = $('#updateCmntAttr').val();
-    	 		selectedFeatures[0].attributes.MSG = $('#msgAttr').val();
-	 		// Apply edits 
-	 			workflowLyr.applyEdits(null, selectedFeatures, null, function(){ 
-        			editToolbar.deactivate();				
-        			drawToolbar.deactivate();
-        			template.clearSelection();
-	           		queryStatus();	
-	           		closeForm(); 
-					// previousID = ''; 
-	 				console.log("Save successful, ", editToolbar.getCurrentState());	
-	        	}, function(error){
-	        		console.log("Save failed: ", error);
-	        	}
-	        	);	
+    	// Validate form before saving edits to feature layer
+    		function validateForm(){
+    			var form = $('#attrForm')[0];
+    			if (!form.checkValidity()){
+    				alert("Please fill out all required fields");
+    				console.log("form validation checked");
+    				return
+    				// form.classList.add('was-validated');
+    			}
+    			if ($('#statAttr').val() == "Complete" && $('#yearAttr').val().length == 0){	            	
+	            	alert("Year cannot be NULL when Status = 'Complete'");
+	            	$('#yearAttr').addClass('invalid');
+	            	return            
+	            }
+	            if ($('#statAttr').val() == "Complete" && $('#priorAttr').val() != "Yes"){	            	
+	            	alert("Priority cannot be 'No' when Status = 'Complete'");
+	            	$('#priorAttr').addClass('invalid');
+	            	return            
+	            }
+	            if ($('#statAttr').val() == "Complete" && ($('#etlStatAttr').val() != "Complete in GRID Prod" && $('#etlStatAttr').val() != "Not Applicable")){	            	
+	            	alert("ETL Status must be 'Complete in GRID Prod' or 'Not Applicable' when Status = 'Complete'");
+	            	$('#etlStatAttr').addClass('invalid');
+	            	return            
+	            }
+	            if ($('#etlStatAttr').val() == "Complete in GRID Prod" && ($('#distRvwAttr').val() != "Complete" && $('#distRvwAttr').val() != "Not Applicable")){	            	
+	            	alert("District Review must be 'Complete' or 'Not Applicable' when ETL Status = 'Complete in GRID Prod'");
+	            	$('#distRvwAttr').addClass('invalid');
+	            	return            
+	            }
+	            if ($('#statAttr').val() == "Complete" && ($('#onSysGridJobAttr').val() != "Complete" && $('#onSysGridJobAttr').val() != "Not Applicable")){
+	            	alert("On-System GRID Job must be 'Complete' or 'Not Applicable' when Status = 'Complete'");
+	            	$('#onSysGridJobAttr').addClass('invalid');
+	            	return            
+	            }
+	            if ($('#statAttr').val() == "Complete" && ($('#offSysGridJobAttr').val() != "Complete" && $('#offSysGridJobAttr').val() != "Not Applicable")){	            	
+	            	alert("Off-System GRID Job must be 'Complete' or 'Not Applicable' when Status = 'Complete'");
+	            	$('#offSysGridJobAttr').addClass('invalid');
+	            	return            
+	            }
+	            if ($('#statAttr').val() == "Complete" && ($('#distGridJobAttr').val() != "Complete" && $('#distGridJobAttr').val() != "Not Applicable")){
+	            	alert("District GRID Job must be 'Complete' or 'Not Applicable' when Status = 'Complete'");
+	            	$('#distGridJobAttr').addClass('invalid');
+	            	return            
+	            }
+	            if ($('#actvAttr').val() == "Minute Order" && $('#minOrderAttr').val().length == 0){
+	            	alert("Minute Order field must contain a value when Activity = 'Minute Order'");
+	            	$('#minOrderAttr').addClass('invalid');
+	            	return            
+	            }
+	            else{	 		
+        			// if the form validates properly
+					$('#yearAttr').removeClass('invalid'); // remove 'invalid' css class so that element is not highlighted in red
+					$('#priorAttr').removeClass('invalid'); // same					
+	            	$('#etlStatAttr').removeClass('invalid');
+	            	$('#distRvwAttr').removeClass('invalid');
+	            	$('#onSysGridJobAttr').removeClass('invalid');
+	            	$('#offSysGridJobAttr').removeClass('invalid');	            	
+	            	$('#distGridJobAttr').removeClass('invalid');	            	
+	            	$('#minOrderAttr').removeClass('invalid');
+	            	saveEdits();
+	            }
+    		}
 
+    	// Save Edits when Save button is clicked
+    	 	function saveEdits(){    	 		
+	            console.log("Saving edits"); 	            
+				// show loader until form is saved succesfully and closeForm function runs
+					$('#mask').css("display", "block");
+					$('#loader').css("display", "block");
+				// reset form
+					$('#attrForm').data("changed", "false"); 
+	            // Populate the graphic's attributes with any new values from the form
+	    	 		console.log("Selected feature (used for saving edits): ", selectedFeatures);
+	    	 		selectedFeatures[0].attributes.RTE_NM = $('#rteNameAttr').val();    	 		
+	    	 		selectedFeatures[0].attributes.YR_END = $('#yearAttr').val();
+	    	 		selectedFeatures[0].attributes.AFFECT_RTE = $('#affctRtesAttr').val();
+	    	 		selectedFeatures[0].attributes.MRT_NBR = $('#mrtNbrAttr').val();
+	    	 		selectedFeatures[0].attributes.MO_NBR = $('#minOrderAttr').val();
+	    	 		selectedFeatures[0].attributes.STAT = $('#statAttr').val();
+	    	 		selectedFeatures[0].attributes.PRTY = $('#priorAttr').val();
+	    	 		selectedFeatures[0].attributes.DIST_NM = $('#distNmAttr').val();
+	    	 		selectedFeatures[0].attributes.CNTY_NM = $('#cntyNmAttr').val();
+	    	 		selectedFeatures[0].attributes.GIS_ANLST = $('#gisAnalAttr').val();
+	    	 		selectedFeatures[0].attributes.GRID_ANLST = $('#gridAnalAttr').val();
+	    	 		selectedFeatures[0].attributes.DIST_ANLST = $('#distAnalAttr').val();
+	    	 		selectedFeatures[0].attributes.DESC_ = $('#descAttr').val();    	 		    	 		
+	    	 		selectedFeatures[0].attributes.ACTV = $('#actvAttr').val();
+	    	 		selectedFeatures[0].attributes.JB_TYPE = $('#jobTypeAttr').val();
+	    	 		selectedFeatures[0].attributes.DIST_REVW = $('#distRvwAttr').val();
+	    	 		selectedFeatures[0].attributes.ETL_STAT = $('#etlStatAttr').val();
+	    	 		selectedFeatures[0].attributes.ON_SYS_JOB = $('#onSysGridJobAttr').val();
+	    	 		selectedFeatures[0].attributes.OFF_SYS_JOB = $('#offSysGridJobAttr').val();
+	    	 		selectedFeatures[0].attributes.DIST_JOB = $('#distGridJobAttr').val();
+	    	 		selectedFeatures[0].attributes.UPDT_CMNT = $('#updateCmntAttr').val();
+	    	 		selectedFeatures[0].attributes.MSG = $('#msgAttr').val();
+		 		// Apply edits 
+		 			workflowLyr.applyEdits(null, selectedFeatures, null, function(){ 
+	        			editToolbar.deactivate();				
+	        			drawToolbar.deactivate();
+	        			template.clearSelection();
+		           		queryStatus();	
+		           		closeForm(); 
+						// previousID = ''; 
+		 				console.log("Save successful, ", editToolbar.getCurrentState());							
+		        	}, function(error){
+		        		alert("Save failed: ", error);
+						$('#mask').css("display", "none");
+						$('#loader').css("display", "none");
+		        	}
+		        	);		        	
  			}
 
 		// Delete edits
@@ -2118,6 +2226,14 @@
 					$("#descRemain").html("");
 					$("#updateRemain").html("");
 					$("#msgRemain").html("");
+					$('#yearAttr').removeClass('invalid'); // remove 'invalid' css class so that element is not highlighted in red
+					$('#priorAttr').removeClass('invalid'); // same					
+	            	$('#etlStatAttr').removeClass('invalid');
+	            	$('#distRvwAttr').removeClass('invalid');
+	            	$('#onSysGridJobAttr').removeClass('invalid');
+	            	$('#offSysGridJobAttr').removeClass('invalid');	            	
+	            	$('#distGridJobAttr').removeClass('invalid');	            	
+	            	$('#minOrderAttr').removeClass('invalid');
 					workflowLyr.clearSelection(); 
 					workflowLyr.refresh();
 	            	myFeatureTable.clearFilter(); 
