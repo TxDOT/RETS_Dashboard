@@ -1632,8 +1632,8 @@
             $('#runSQLBtn').click(function(){
                 clearFilters();
                 let theSQL = $('#sqlBox').val();
-                buildDefExp();
                 setDefExp(theSQL);
+                queryStatus(theSQL); //passing arg as flag to to reset Stats table globals
             });
 
         // For now, Export will direct to REST endpoint with WHERE clause populated, need to add logic that parses complex queries
@@ -2498,7 +2498,7 @@
 				year ="";
 				$("#actvBtn").text("Select an Activity").append(" <span class='caret'></span>");
 				actv ="";
-				buildDefExp();
+				// buildDefExp();
             }
             // Validate SQL against REST API using txdot framework CDN
             function validateSQL(sql,token){
@@ -2546,7 +2546,21 @@
             }
 		// Query workflowLyr for Status and update Status Table
 
-			function queryStatus(){
+			function queryStatus(sqlFlag){
+                // Reset globals for Stats table if running DefQuery with SQL
+                if (sqlFlag != null || sqlFlag != undefined) {
+                    // setTimeout(console.log(),1000); //calling a dummy function to reset DOM
+                    notStarted="...";
+                    document.getElementById("notStarted").innerHTML = notStarted;
+                    inProgress="...";
+                    document.getElementById("inProgress").innerHTML = inProgress;
+                    complete="...";
+                    document.getElementById("complete").innerHTML = complete;
+                    notReady="...";
+                    document.getElementById("notReady").innerHTML = notReady;
+                    onHold="...";
+                    document.getElementById("onHold").innerHTML = onHold;
+                }
 				console.log("Running Query Status function to get status numbers for little table");
 				var notStartedQuery = new Query();
 				notStartedQuery.where = "STAT = 'Not Started'";
@@ -2593,6 +2607,12 @@
 				console.log(error);
 				});
 			}
+
+            function delay(){
+                console.log("waiting");
+            }
+
+
 	});
 
 		</script>
