@@ -51,7 +51,7 @@
 	 	width: 100%;
 	 	top: 0;
   		left: 0;
-	 	background-color: rgba(0,0,0,.5);
+	 	background-color: #606060;
 	 	position: fixed;
 	 	display: block;
 	 	z-index: 99;
@@ -2251,7 +2251,7 @@
                     errorList.push("ETL Status must be 'Complete in GRID Prod' or 'Not Applicable' when Status = 'Complete'");
                     $('#etlStatAttr').addClass('invalid');
 	            }
-	           if ($('#etlStatAttr').val() == "Complete in GRID Prod" && ($('#distRvwAttr').val() != "Complete" && $('#distRvwAttr').val() != "Not Applicable")){
+	            if ($('#etlStatAttr').val() == "Complete in GRID Prod" && ($('#distRvwAttr').val() != "Complete" && $('#distRvwAttr').val() != "Not Applicable")){
                     errorList.push("District Review must be 'Complete' or 'Not Applicable' when ETL Status = 'Complete in GRID Prod'");
                     $('#distRvwAttr').addClass('invalid');
 	            }
@@ -2636,6 +2636,11 @@
 				}
 				// console.log(exp);
 				console.log(expArray);
+
+                // Clear SQL text box if selection made from filters
+                if (expArray.length != 0){
+                    $('#sqlBox').val("");
+                }
 
 				finalExp = "";
 				var counter = 1;
