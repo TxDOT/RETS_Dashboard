@@ -251,6 +251,14 @@
      	font-family: helvetica;
  	}
 
+ 	#routeSearch {
+	  width: 70%;
+	  box-sizing: border-box;
+	  padding: 12px;
+	  border: none;
+	  border-bottom: 1px solid #ddd;
+	}
+
 	/*SEARCH************************************************/
 	#search {
 	display: block;
@@ -499,11 +507,11 @@
 							      <li value="Clear"><a href="#GRIDAnalystSel"><b>Clear</b></a></li>
 							    </ul>
 							  </div>
-							  <div class="dropdown">
+							  <div class="dropdown" id="routeDropdown">
 							    <button class="btn btn-default dropdown-toggle filterBtn" type="button" data-toggle="dropdown" id="routeBtn">Select a Route
 							    <span class="caret"></span></button>
 							    <ul id="routeSel" class="dropdown-menu">
-							      <!-- <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">	 -->
+							      <span class="glyphicon glyphicon-search stopProp" style="padding: 18px"></span><input type="text" placeholder="Search..." id="routeSearch"><span id="removeSearch"class="glyphicon glyphicon-remove stopProp" style="padding: 18px"></span>
 							      <li value="Clear"><a href="#routeSel"><b>Clear</b></a></li>
 							    </ul>
 							  </div>
@@ -803,11 +811,32 @@
 		        <div class="charWarning" id="updateRemain"> </div>
 		      </div>
 		    </div>
-		    <div style="padding-left: 5px;"class="form-group">
+		   <!--  <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="msgAttr">Message:</label>
 		      <div class="col-sm-8">
 		        <textarea class="form-control" rows="5" maxlength="255" id="msgAttr" placeholder="Enter a message for the next analyst" name="msgAttr" value=""></textarea>
 		        <div class="charWarning" id="msgRemain"> </div>
+		      </div>
+		    </div> -->
+		    <div style="padding-left: 5px;"class="form-group">
+		      <label class="control-label col-sm-3" for="createDateAttr">Creation Date:</label>
+		      <div class="col-sm-8">
+		        <input type="text" class="form-control" id="createDateAttr" placeholder="Creation Date" name="createDateAttr" value="" disabled>
+		      </div>
+		    </div><div style="padding-left: 5px;"class="form-group">
+		      <label class="control-label col-sm-3" for="creatorAttr">Creator:</label>
+		      <div class="col-sm-8">
+		        <input type="text" class="form-control" id="creatorAttr" placeholder="Creator" name="creatorAttr" value="" disabled>
+		      </div>
+		    </div><div style="padding-left: 5px;"class="form-group">
+		      <label class="control-label col-sm-3" for="lastEditAttr">Last Edit Date:</label>
+		      <div class="col-sm-8">
+		        <input type="text" class="form-control" id="lastEditAttr" placeholder="Last Edit Date" name="lastEditAttr" value="" disabled>
+		      </div>
+		    </div><div style="padding-left: 5px;"class="form-group">
+		      <label class="control-label col-sm-3" for="editorAttr">Editor:</label>
+		      <div class="col-sm-8">
+		        <input type="text" class="form-control" id="editorAttr" placeholder="Editor" name="editorAttr" value="" disabled>
 		      </div>
 		    </div>
 		    <div style="padding-left: 5px;"class="form-group">
@@ -927,11 +956,14 @@
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                   </button>
-                  <h3 class="modal-title" id="aboutModLabel">About (RETS Dashboard v2.1.2)</h3>
+                  <h3 class="modal-title" id="aboutModLabel">About (RETS Dashboard v2.2.0)</h3>
               </div>
               <div class="modal-body">
                 <h4>Release notes:</h4>
                 <ul>
+                    <li><strong>Added search option to Route Filter</strong>
+                       <p>Type-ahead functionality to filter dropdown list contents as you type</p>
+                    </li>
                     <li><strong>Updated Year fields to add 2020</strong>
                        <p></p>
                     </li>
@@ -1212,7 +1244,7 @@
 	  	var expArray = [];
 	  	var oID;
 	  	var previousID = '';
-	  	var appVersion = "Version 2.1.2"
+	  	var appVersion = "Version 2.2.0"
 	  	var GISAnlstDisplay;
 	    var GRIDAnlstDisplay;
 		var DistAnlstDisplay;
@@ -1223,6 +1255,7 @@
 		var GISAnalystArray = [];
 		var GRIDAnalystArray = [];
 		var formFlag = 0;
+		var routeArray= [];
 
 	// MAP AND LAYERS*********************************************************************************************
 
@@ -1543,19 +1576,53 @@
 			}, "homeButton");
 			home.startup();
 
-		// Filter Route List on keyup
-			// function filterFunction(){
-			// 	$.each($("#routeSel li") function(){
-			// 		if (this.innerHTML.toUpperCase().indexOf(filter) > -1) {
-			//             a[i].style.display = "";
-			//         } else {
-			//             a[i].style.display = "none";
-			//         }
-			// 	}
-			// }
 
 
 	// EVENTS.............................................................................
+
+		// Stop propogation of bootstrap dropdowns when clicked
+			$('.stopProp').click(function(event){
+    			event.stopPropagation();
+			});
+
+		// Filter Route List on keyup
+			$("#routeSearch").keyup(function(evt){
+				let input = evt.target.value.toUpperCase();
+				var i;
+				// console.log(input);
+				// $.each(routeArray, function(){
+					// console.log(this);
+					let a = $('#routeSel li');
+					for (i = 0; i < a.length; i++) {
+					    let txtValue = a[i].textContent || a[i].innerText;
+					    if (txtValue.toUpperCase().indexOf(input) > -1) {
+					      a[i].style.display = "";
+					    } else {
+					      a[i].style.display = "none";
+					    }
+					  }
+				// });
+			});
+
+		// Clear route list search field
+			$('#removeSearch').click(function(event){
+				$("#routeSearch").val("");
+				$("#routeSel li").show();
+				$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");
+			});
+
+		// Clear the filter for the route dropdown if there is nothing in the search box when the dropdown closes (e.g. if the user clears the search box then clicks outside the dropdown to close it)
+			$('#routeDropdown').on("hidden.bs.dropdown", function(event){
+				console.log($("#routeSearch").val())
+				if (!$("#routeSearch").val()){
+					filterRoute("Clear");
+					console.log("Route Search is EMPTY");
+				}
+				else {
+					console.log("Route Search contains a value");
+					return
+				}
+			});
 
 		// events for controlling attribute form validation css
 			$('#yearAttr').change(function(){
@@ -1639,24 +1706,24 @@
 
 		// Select point features and populate attribute form fields
 			workflowLyr.on("click", function(evt){
+			// save targetGraphic variable for use later in attachmentEditor
 				targetGraphic = evt.graphic;
 			// Track the selected Object IDs
 				console.log(previousID);
 				oID = evt.graphic.attributes.OBJECTID;
-				console.log(oID);
-				console.log("workflowLyr clicked");
+				console.log("workflowLyr clicked, OID: ", oID);
 				var objectIdArray = [oID];
 				if (previousID !== oID){
         		myFeatureTable.filterRecordsByIds([objectIdArray]);
         		previousID = oID;
         		}
 
-				// Do not rerun query if Move mode is enabled from attribute form
+			// Do not rerun query if Move mode is enabled from attribute form
 				if ($('#moveBtn').html() === "Save Move") {
 					console.log("@workflowLyr on-click, Return: In Move mode");
 					return
 				}
-				// If not in Move mode, select the feature that was clicked on, open the attribute form and populate attribute fields from selected feature
+			// If not in Move mode, select the feature that was clicked on, open the attribute form and populate attribute fields from selected feature
 				else {
 				var workflowLyrQuery = new Query();
 				workflowLyrQuery.objectIds = [oID];
@@ -1664,6 +1731,11 @@
 				selectedFeatures = x;
 				console.log("Results from workflowLyrQuery: ", x);
   				});
+			// Convert EPOCH time to local time and format as a string
+				let createTime = evt.graphic.attributes.CreationDate;
+				let editTime = evt.graphic.attributes.EditDate;
+				let ct = new Date(createTime).toGMTString().substr(0,16);
+				let et = new Date(editTime).toGMTString().substr(0,16);
 			// Populate fields in atribute form
 				$('#retsIdAttr').val(evt.graphic.attributes.OBJECTID);
 				$('#yearAttr').val(evt.graphic.attributes.YR_END);
@@ -1687,7 +1759,11 @@
      	  		$('#offSysGridJobAttr').val(evt.graphic.attributes.OFF_SYS_JOB);
      	  		$('#distGridJobAttr').val(evt.graphic.attributes.DIST_JOB);
      	  		$('#updateCmntAttr').val(evt.graphic.attributes.UPDT_CMNT);
-     	  		$('#msgAttr').val(evt.graphic.attributes.MSG);
+     	  		// $('#msgAttr').val(evt.graphic.attributes.MSG);
+     	  		$('#createDateAttr').val(ct);
+     	  		$('#creatorAttr').val(evt.graphic.attributes.Creator);
+     	  		$('#lastEditAttr').val(et);
+     	  		$('#editorAttr').val(evt.graphic.attributes.Editor);
  	  		// Show the attribute sidenav
 				openForm();
 				}
@@ -2042,10 +2118,10 @@
 			queryTask3.execute(query3).then(popRouteList);
 
 			function popRouteList (results){
-
 				$.each(results.features,function(){
 	            	var listItem = document.createElement('li');
 	            	var name = this.attributes.RTE_NM;
+	            	routeArray.push(name);
 	            	// Append values into filter dropdown in the TOC
 	            	$('#routeSel').append($(listItem).attr('value',name).html("<a href='#routeSel'>"+ name +"</a>"));
 	        	});
@@ -2054,9 +2130,11 @@
 			 	$("#routeSel li").click(function(){
 			 		if ($(this).text() === "Clear"){
 			 			$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");
+			 			$("#routeSearch").val("");
 			 		}
 			 		else {
 			 			$("#routeBtn").text($(this).text()).append(" <span class='caret'></span>");
+			 			$("#routeSearch").val($(this).text());
 			 		}
 					var text = $(this).text();
 					console.log(text);
@@ -2331,7 +2409,7 @@
 	    	 		selectedFeatures[0].attributes.OFF_SYS_JOB = $('#offSysGridJobAttr').val();
 	    	 		selectedFeatures[0].attributes.DIST_JOB = $('#distGridJobAttr').val();
 	    	 		selectedFeatures[0].attributes.UPDT_CMNT = $('#updateCmntAttr').val();
-	    	 		selectedFeatures[0].attributes.MSG = $('#msgAttr').val();
+	    	 		// selectedFeatures[0].attributes.MSG = $('#msgAttr').val();
 		 		// Apply edits
 		 			workflowLyr.applyEdits(null, selectedFeatures, null, function(){
 	        			editToolbar.deactivate();
@@ -2698,6 +2776,8 @@
 				year ="";
 				$("#actvBtn").text("Select an Activity").append(" <span class='caret'></span>");
 				actv ="";
+				$("#routeSearch").val("");
+				$("#routeSel li").show();
 				// buildDefExp();
             }
             // Validate SQL against REST API using txdot framework CDN
