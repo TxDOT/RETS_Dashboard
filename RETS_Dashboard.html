@@ -1586,10 +1586,10 @@
 			});
 
 		// Filter Route List on keyup
-			$("#routeSearch").keyup(function(evt){				
+			$("#routeSearch").keyup(function(evt){
 				let input = evt.target.value.toUpperCase();
 				var i;
-				// console.log(input); 
+				// console.log(input);
 				// $.each(routeArray, function(){
 					// console.log(this);
 					let a = $('#routeSel li');
@@ -1609,7 +1609,7 @@
 				$("#routeSearch").val("");
 				$("#routeSel li").show();
 				$("#routeBtn").text("Select a Route").append(" <span class='caret'></span>");
-			});	
+			});
 
 		// Clear the filter for the route dropdown if there is nothing in the search box when the dropdown closes (e.g. if the user clears the search box then clicks outside the dropdown to close it)
 			$('#routeDropdown').on("hidden.bs.dropdown", function(event){
@@ -1731,13 +1731,11 @@
 				selectedFeatures = x;
 				console.log("Results from workflowLyrQuery: ", x);
   				});
-			// Convert EPOCH time to local time
+			// Convert EPOCH time to local time and format as a string
 				let createTime = evt.graphic.attributes.CreationDate;
-				let editTime = evt.graphic.attributes.EditDate; 
-				let ct = new Date(0);
-				let et = new Date(0); // The 0 there is the key, which sets the date to the epoch
-				ct.setUTCSeconds(createTime);
-				et.setUTCSeconds(editTime);
+				let editTime = evt.graphic.attributes.EditDate;
+				let ct = new Date(createTime).toGMTString().substr(0,16);
+				let et = new Date(editTime).toGMTString().substr(0,16);
 			// Populate fields in atribute form
 				$('#retsIdAttr').val(evt.graphic.attributes.OBJECTID);
 				$('#yearAttr').val(evt.graphic.attributes.YR_END);
