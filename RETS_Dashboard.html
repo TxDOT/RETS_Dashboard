@@ -689,7 +689,8 @@
 		    <div style="padding-left: 5px;"class="form-group">
 		      <label class="control-label col-sm-3" for="yearAttr">Data Year:</label>
 		      <div class="col-sm-8">
-		        <select class="form-control" id="yearAttr" placeholder="Select a Year">
+		        <select class="form-control" id="yearAttr" placeholder="Select a Year">		        	
+		       		<option value=""></option>
 			  	</select>
 		      </div>
 		    </div>
@@ -956,39 +957,45 @@
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                   </button>
-                  <h3 class="modal-title" id="aboutModLabel">About (RETS Dashboard v2.2.0)</h3>
+                  <h3 class="modal-title" id="aboutModLabel">About (RETS Dashboard v2.2.1)</h3>
               </div>
               <div class="modal-body">
                 <h4>Release notes:</h4>
                 <ul>
-                    <li><strong>Added search option to Route Filter</strong>
+                    <li><strong>Sorted search results so that RETS ID is near the top</strong>
+                    	<p></p>
+                    </li>
+                    <li><strong>Changed Data Year field in attribute form</strong>
+                    	<p>Form now gets domain values from the service layer, rather that querying for distinct values in the table</p>
+                    </li>
+                    <li><strong>(v2.2.0) Added search option to Route Filter</strong>
                        <p>Type-ahead functionality to filter dropdown list contents as you type</p>
                     </li>
-                    <li><strong>Updated Year fields to add 2020</strong>
+                    <li><strong>(v2.2.0) Updated Year fields to add 2020</strong>
                        <p></p>
                     </li>
-                    <li><strong>Added “Activity” field </strong>
+                    <li><strong>(v2.2.0) Added “Activity” field </strong>
                       <p>New field contains values for “TxDOTConnect, Minute Order, CRI, Sprints,” etc.</p>
                     </li>
-                    <li><strong>Added “Activity” filter in TOC pane</strong>
+                    <li><strong>(v2.2.0) Added “Activity” filter in TOC pane</strong>
                       <p>Filter records by Activity</p>
                     </li>
-                    <li><strong>Added character counters to text boxes</strong>
+                    <li><strong>(v2.2.0) Added character counters to text boxes</strong>
                       <p>All large text boxes have character counter to prevent entering more characters than will save</p>
                     </li>
-                    <li><strong>Added validation to attribute pane fields</strong>
+                    <li><strong>(v2.2.0) Added validation to attribute pane fields</strong>
                       <p>Users cannot enter incorrect combinations and cannot leave certain fields blank</p>
                     </li>
-                    <li><strong>Added "Advanced Query" tab to TOC pane</strong>
+                    <li><strong>(v2.2.0) Added "Advanced Query" tab to TOC pane</strong>
                       <p>Allows user to enter custom SQL queries that are not available using only filters </p>
                     </li>
-                    <li><strong>Added "Application Options" tab to TOC pane</strong>
+                    <li><strong>(v2.2.0) Added "Application Options" tab to TOC pane</strong>
                         <p>This contains Log Off button and new Version Info button</p>
                     </li>
-                    <li><strong>Standardized alerts and modal behavior</strong>
+                    <li><strong>(v2.2.0) Standardized alerts and modal behavior</strong>
                         <p></p>
                     </li>
-                    <li><strong>API Updates</strong>
+                    <li><strong>(v2.2.0) API Updates</strong>
                         <p>Updated Esri JS API to 3.32</p>
                     </li>
                 </ul>
@@ -1244,7 +1251,7 @@
 	  	var expArray = [];
 	  	var oID;
 	  	var previousID = '';
-	  	var appVersion = "Version 2.2.0"
+	  	var appVersion = "Version 2.2.1"
 	  	var GISAnlstDisplay;
 	    var GRIDAnlstDisplay;
 		var DistAnlstDisplay;
@@ -1421,20 +1428,34 @@
 	            map: map,
 	         }, "search");
 
-
 	         var sources = search.get("sources");
 
 	         sources.push({
-	            featureLayer: new FeatureLayer("https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_City_Boundaries/FeatureServer/0"),
-	            searchFields: ["CITY_NM"],
-	            displayField: "CITY_NM",
+	            featureLayer: workflowLyr,
+	            searchFields: ["OBJECTID", "RTE_NM", "GIS_ANLST", "GRID_ANLST"],
+	            displayField: "OBJECTID",
 	            exactMatch: false,
-	            name: "City",
+	            name: "RETS ID",
 	            outFields: ["*"],
-	            placeholder: "City",
-	            highlightSymbol: new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.Color([255,255,0,0.5]), 7),new esri.Color([255,255,255,0.0])),
-	            maxResults: 6,
-	            maxSuggestions: 6,
+	            placeholder: "Ex: RETS ID, Analyst Names, etc.",
+	            highlightSymbol: new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.Color([255,255,0,0.5]), 7),
+	            maxResults: 12,
+	            maxSuggestions: 12,
+	            enableSuggestions: true,
+	            minCharacters: 0
+	         });
+
+	         sources.push({
+	            featureLayer: new FeatureLayer("https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadways/FeatureServer/0"),
+	            searchFields: ["SEARCH"],
+	            displayField: "SEARCH",
+	            exactMatch: false,
+	            name: "Route",
+	            outFields: ["*"],
+	            placeholder: "Ex: IH0035, US0083, SH0079",
+	            highlightSymbol: new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.Color([255,255,0,0.5]), 7),
+	            maxResults: 12,
+	            maxSuggestions: 12,
 	            enableSuggestions: true,
 	            minCharacters: 0
 	         });
@@ -1452,7 +1473,6 @@
 	            maxSuggestions: 6,
 	            enableSuggestions: true,
 	            minCharacters: 0
-
 	         });
 
 	         sources.push({
@@ -1464,6 +1484,21 @@
 	            name: "Control Section Job (CSJ)",
 	            placeholder: "001001001",
 	            highlightSymbol: new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.Color([255,255,0,0.5]), 7),
+	            maxResults: 6,
+	            maxSuggestions: 6,
+	            enableSuggestions: true,
+	            minCharacters: 0
+	         });
+
+	         sources.push({
+	            featureLayer: new FeatureLayer("https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_City_Boundaries/FeatureServer/0"),
+	            searchFields: ["CITY_NM"],
+	            displayField: "CITY_NM",
+	            exactMatch: false,
+	            name: "City",
+	            outFields: ["*"],
+	            placeholder: "City",
+	            highlightSymbol: new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.Color([255,255,0,0.5]), 7),new esri.Color([255,255,255,0.0])),
 	            maxResults: 6,
 	            maxSuggestions: 6,
 	            enableSuggestions: true,
@@ -1514,37 +1549,6 @@
 	            enableSuggestions: true,
 	            minCharacters: 0
 	         });
-
-	         sources.push({
-	            featureLayer: workflowLyr,
-	            searchFields: ["OBJECTID", "RTE_NM", "GIS_ANLST", "GRID_ANLST"],
-	            displayField: "OBJECTID",
-	            exactMatch: false,
-	            name: "RETS ID",
-	            outFields: ["*"],
-	            placeholder: "Ex: RETS ID, Analyst Names, etc.",
-	            highlightSymbol: new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.Color([255,255,0,0.5]), 7),
-	            maxResults: 12,
-	            maxSuggestions: 12,
-	            enableSuggestions: true,
-	            minCharacters: 0
-	         });
-
-	         sources.push({
-	            featureLayer: new FeatureLayer("https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Roadways/FeatureServer/0"),
-	            searchFields: ["SEARCH"],
-	            displayField: "SEARCH",
-	            exactMatch: false,
-	            name: "Route",
-	            outFields: ["*"],
-	            placeholder: "Ex: IH0035, US0083, SH0079",
-	            highlightSymbol: new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.Color([255,255,0,0.5]), 7),
-	            maxResults: 12,
-	            maxSuggestions: 12,
-	            enableSuggestions: true,
-	            minCharacters: 0
-	         });
-
 
 	         sources[0].categories = ["Coordinate System", "Street Name"];
 	         sources[0].placeholder= "-97.745520, 30.257332 or Park Street";
@@ -2153,14 +2157,22 @@
 			queryTask4.execute(query4).then(popYearList);
 
 			function popYearList (results){
+				// Populate the Data Year dropdown in the Attribute Pane with coded domain values from the workflowLyr
+				var domains = workflowLyr.fields[25].domain.codedValues;
+				$.each(domains, function(){
+					domNm = this.name;
+					// console.log(domNm);
+					// Append values into dropdown on Attribute Form
+	            	$('#yearAttr').append($('<option></option>').val(domNm).html(domNm));
+				});            	
 
 				$.each(results.features,function(){
 	            	var listItem = document.createElement('li');
 	            	var name = this.attributes.YR_END;
 	            	// Append values into filter dropdown on the TOC
-	            	$('#yearSel').append($(listItem).attr('value',name).html("<a href='#yearSel'>"+ name +"</a>"));
-	            	// Append values into Data Year dropdown on Attribute Form
-	            	$('#yearAttr').append($('<option></option>').val(name).html(name));
+	            	$('#yearSel').append($(listItem).attr('value',name).html("<a href='#yearSel'>"+ name +"</a>"));        	
+	            	// DEPRECATED - (Append values into Data Year dropdown on Attribute Form) - instead populating based on the domain field (above)
+	            	// $('#yearAttr').append($('<option></option>').val(name).html(name));
 	        	});
 
 				// Get the value of the Year dropdown menu for workflowLyr definition query
@@ -2193,7 +2205,7 @@
 				var domains = workflowLyr.fields[26].domain.codedValues;
 				$.each(domains, function(){
 					domNm = this.name;
-					console.log(domNm);
+					// console.log(domNm);
 					// Append values into dropdown on Attribute Form
 	            	$('#actvAttr').append($('<option></option>').val(domNm).html(domNm));
 				});
